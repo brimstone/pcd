@@ -11,7 +11,7 @@
       "providers": [
         {
           "name": "virtualbox",
-          "url": "https:\\/\\/github.com/brimstone/app-ng/releases/download/0.0.1/app-ng-0.0.1.box"
+          "url": "https://github.com/brimstone/app-ng/releases/download/0.0.1/app-ng-0.0.1.box"
         }
       ]
     }
