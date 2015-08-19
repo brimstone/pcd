@@ -1,0 +1,19 @@
+{
+  "description": "Box for App-ng",
+  "short_description": "Box for App-ng",
+  "name": "app-ng",
+  "versions": [
+    {
+      "version": "0.0.1",
+      "status": "active",
+      "description_html": "Box for App-ng",
+      "description_markdown": "Box for App-ng",
+      "providers": [
+        {
+          "name": "virtualbox",
+          "url": "https:\\/\\/github.com/brimstone/app-ng/releases/download/0.0.1/app-ng-0.0.1.box"
+        }
+      ]
+    }
+  ]
+}
