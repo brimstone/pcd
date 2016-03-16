@@ -1,5 +1,5 @@
 KERNEL_VERSION := 4.4.5
-GRSEC_VERSION := 3.1-4.4.5-201603131305
+GRSEC_VERSION := 3.1-4.4.5-201603142220
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)

@@ -1,0 +1,3 @@
+#!/bin/bash
+grsec="$(wget https://grsecurity.net/download.php -O - -q | grep /test/ | sed 's/.patch".*$//;s/^.*grsecurity-//')"
+sed -i "s/GRSEC_VERSION := .*$/GRSEC_VERSION := $grsec/" Makefile
