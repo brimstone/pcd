@@ -29,7 +29,7 @@ libc:
 components: libc
 	cd busybox && make >&2
 
-out: kernel.gz package
+out: kernel.gz components
 	@echo "Extracting compiled modules to output directory" >&2
 	@mkdir out >&2
 	@# TODO loop over every directory in $PWD
