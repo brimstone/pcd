@@ -23,11 +23,11 @@ kernel.gz:
 	@cp kernel/kernel.gz . >&2
 
 libc:
-	cd musl && make >&2
+	@cd musl && make >&2
 
 .PHONY: components
 components: libc
-	cd busybox && make >&2
+	@cd busybox && make >&2
 
 out: kernel.gz components
 	@echo "Extracting compiled modules to output directory" >&2
