@@ -9,7 +9,7 @@ all: busybox.tar.bz2
 	tar xf busybox.tar.bz2
 	cd busybox-* \
 	&& cp ../busybox.config .config \
-	&& make -j${JOBS} install
+	&& make install
 
 busybox.tar.bz2:
 	wget http://busybox.net/downloads/busybox-1.24.1.tar.bz2 \
