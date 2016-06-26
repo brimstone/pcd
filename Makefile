@@ -43,7 +43,7 @@ initrd: out
 
 initrd.xz: initrd
 	@echo "Compressing initrd" >&2
-	@xz -9 --keep initrd >&2
+	@xz --check=crc32 -9 --keep initrd >&2
 
 .PHONY: tar	
 tar: initrd.xz
@@ -56,3 +56,4 @@ clean:
 	-rm initrd.xz
 	-rm kernel.gz
 	-rm out.tar
+
