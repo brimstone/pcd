@@ -1,16 +1,19 @@
-BUSYBOX_VERSION := 1.24.1
+BUSYBOX_VERSION := 1.25.0
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
-export CC = ${PWD}/../include/bin/musl-gcc
+CC = ${PWD}/../include/bin/musl-gcc
+export CC
 
 
 all: busybox.tar.bz2
 	tar xf busybox.tar.bz2
-	cd busybox-* \
-	&& cp ../busybox.config .config \
-	&& make install
+	cp busybox.config busybox-${BUSYBOX_VERSION}/.config
+	make -C busybox-${BUSYBOX_VERSION} install
+	cp init busybox-${BUSYBOX_VERSION}/_install
+	rm busybox-${BUSYBOX_VERSION}/_install/linuxrc
+	tar -C busybox-${BUSYBOX_VERSION}/_install -cf busybox.tar .
 
 busybox.tar.bz2:
-	wget http://busybox.net/downloads/busybox-1.24.1.tar.bz2 \
+	wget http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \
 	-O busybox.tar.bz2
