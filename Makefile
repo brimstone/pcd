@@ -8,7 +8,7 @@ docker_image:
 
 docker: docker_image
 	@echo "Building with docker"
-	docker run --rm -i pcd:${PCD_VERSION} make tar > out.tar
+	docker run --rm -i pcd:${PCD_VERSION} make tar | tar -xC output
 
 docker_debug: docker_image
 	docker run --rm -it pcd:${PCD_VERSION}
