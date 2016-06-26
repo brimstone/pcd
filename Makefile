@@ -31,9 +31,11 @@ components: libc
 
 out: kernel.gz components
 	@echo "Extracting compiled modules to output directory" >&2
-	@mkdir out >&2
+	@mkdir -p out/dev/pts >&2
+	@mknod out/dev/console c 5 1 >&2
 	@# TODO loop over every directory in $PWD
 	@tar -xf kernel/*.tar -C out >&2
+	@tar -xf busybox/*.tar -C out >&2
 
 initrd: out
 	@echo "Building initrd" >&2
