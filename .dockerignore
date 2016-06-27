@@ -3,3 +3,4 @@ out.tar
 pcd.*
 .ccache
 test
+output
