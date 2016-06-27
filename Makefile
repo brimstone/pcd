@@ -37,15 +37,24 @@ libc:
 
 .PHONY: components
 components: libc
-	@cd busybox && make >&2
+	@for dir in */Makefile; do \
+		[ "$$dir" = "kernel/Makefile" ] && continue; \
+		[ "$$dir" = "musl/Makefile" ] && continue; \
+		make -C "$$(dirname "$$dir")" >&2; \
+	done
 
 out: kernel.gz components
 	@echo "Extracting compiled modules to output directory" >&2
 	@mkdir -p out/dev/pts >&2
 	@mknod out/dev/console c 5 1 >&2
 	@# TODO loop over every directory in $PWD
-	@tar -xf kernel/*.tar -C out >&2
-	@tar -xf busybox/*.tar -C out >&2
+	@tar -xf kernel/out.tar -C out >&2
+	@tar -xf busybox/out.tar -C out >&2
+	@for tar in */out.tar; do \
+		[ "$$tar" = "kernel/out.tar" ] && continue; \
+		[ "$$tar" = "busybox/out.tar" ] && continue; \
+		tar -xf "$$tar" -C out >&2; \
+	done
 
 initrd: out
 	@echo "Building initrd" >&2

@@ -12,7 +12,7 @@ all: busybox.tar.bz2
 	make -C busybox-${BUSYBOX_VERSION} install
 	cp init busybox-${BUSYBOX_VERSION}/_install
 	rm busybox-${BUSYBOX_VERSION}/_install/linuxrc
-	tar -C busybox-${BUSYBOX_VERSION}/_install -cf busybox.tar .
+	tar -C busybox-${BUSYBOX_VERSION}/_install -cf out.tar .
 
 busybox.tar.bz2:
 	wget http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \

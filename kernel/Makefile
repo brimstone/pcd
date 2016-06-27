@@ -10,7 +10,7 @@ ${INSTALL_PATH}: linux-${KERNEL_VERSION}/arch/x86_64/boot/bzImage
 	mkdir ${INSTALL_PATH}
 	cd linux-${KERNEL_VERSION} \
 	&& $(MAKE) install modules_install
-	tar -C ${INSTALL_PATH} -cf modules.tar lib
+	tar -C ${INSTALL_PATH} -cf out.tar lib
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
 
 linux-${KERNEL_VERSION}/arch/x86_64/boot/bzImage: linux-${KERNEL_VERSION}
