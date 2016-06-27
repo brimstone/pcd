@@ -24,11 +24,11 @@ linux-${KERNEL_VERSION}: linux.tar.xz grsec.patch
 	
 linux.tar.xz:
 	wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${KERNEL_VERSION}.tar.xz \
-		-O linux.tar.xz
+		--progress=bar:force:noscroll -O linux.tar.xz
 
 grsec.patch:
 	wget https://grsecurity.net/test/grsecurity-${GRSEC_VERSION}.patch \
-		-O grsec.patch
+		--progress=bar:force:noscroll -O grsec.patch
 
 clean:
 	-rm linux.tar.xz

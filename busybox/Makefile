@@ -16,4 +16,4 @@ all: busybox.tar.bz2
 
 busybox.tar.bz2:
 	wget http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \
-	-O busybox.tar.bz2
+		--progress=bar:force:noscroll -O busybox.tar.bz2
