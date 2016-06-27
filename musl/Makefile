@@ -13,4 +13,4 @@ all: musl.tar.gz
 
 musl.tar.gz:
 	wget http://www.musl-libc.org/releases/musl-1.1.14.tar.gz \
-	-O musl.tar.gz
+		--progress=bar:force:noscroll -O musl.tar.gz
