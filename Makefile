@@ -14,8 +14,18 @@ docker_debug: docker_image
 	docker run --rm -it pcd:${PCD_VERSION}
 endif
 
+KVMSERIAL=-nographic
+ifdef GUI
+	KVMSERIAL=-serial stdio
+endif
+
+KVMSOURCE=-cdrom output/pcd.iso -boot d
+ifdef KERNEL
+	KVMSOURCE=-kernel output/kernel.gz -initrd output/initrd.xz -append "console=ttyS0"
+endif
+
 .PHONY: all
-all: kernel.gz components out cpio
+all: kernel.gz components initrd.xz
 
 kernel.gz:
 	@echo "Building kernel" >&2
@@ -46,9 +56,9 @@ initrd.xz: initrd
 	@xz --check=crc32 -9 --keep initrd >&2
 
 .PHONY: tar	
-tar: initrd.xz
+tar: iso
 	@echo "Extracting output files" >&2
-	@tar -cf - kernel.gz initrd.xz 
+	@tar -cf - pcd.iso
 	@echo "Export complete" >&2
 
 .PHONY: clean
@@ -56,4 +66,34 @@ clean:
 	-rm initrd.xz
 	-rm kernel.gz
 	-rm out.tar
+
+iso: all
+	@rm -rf iso >&2
+	@mkdir iso >&2
+	@cp /usr/lib/ISOLINUX/isolinux.bin iso/ >&2
+	@cp /usr/lib/syslinux/modules/bios/ldlinux.c32 iso/ >&2
+	@cp initrd.xz iso/initrd.xz >&2
+	@cp kernel.gz iso/kernel.gz >&2
+	@cp installer iso >&2
+	@cd iso; sha256sum initrd.xz kernel.gz installer > sha256sum >&2
+	@cd iso; gpg --sign sha256sum >&2 || true
+	@echo "default pcd" > iso/isolinux.cfg
+	@echo "label pcd" >> iso/isolinux.cfg
+	@echo "      kernel kernel.gz" >> iso/isolinux.cfg
+	@echo "      initrd initrd.xz" >> iso/isolinux.cfg
+	@echo "      append audit=1" >> iso/isolinux.cfg
+	@genisoimage -o pcd.iso -b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -J -V pcd iso/ >&2
+
+kvm: pcd.qcow2
+	kvm -m 1024 \
+	${KVMSERIAL} \
+	${KVMSOURCE} \
+	-no-kvm \
+	-usb \
+	-device usb-ehci \
+	-device usb-kbd \
+	pcd.qcow2 || true
+
+pcd.qcow2:
+	qemu-img create -f qcow2 pcd.qcow2 20G
 
