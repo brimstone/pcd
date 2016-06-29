@@ -1,0 +1,6 @@
+#!/bin/sh
+
+sv status /service/syslog | grep -q '^run' || exit
+
+echo 1 > /proc/sys/kernel/printk
+exec klogd -n

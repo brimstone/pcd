@@ -1,2 +1,2 @@
 all:
-	tar -cf out.tar *
+	tar -cf out.tar -C root .
