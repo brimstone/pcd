@@ -7,7 +7,7 @@ JOBS = $(shell grep -c processor /proc/cpuinfo)
 all: musl.tar.gz
 	tar xf musl.tar.gz
 	cd musl-* \
-	&& ./configure --prefix="${PWD}/../include" \
+	&& ./configure --prefix="${PWD}/../include" --disable-shared \
 	&& make -j${JOBS} \
 	&& make install
 
