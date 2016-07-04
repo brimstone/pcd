@@ -1,5 +1,6 @@
 KERNEL_VERSION := 4.5.7
 GRSEC_VERSION := 3.1-4.5.7-201606302132
+LOCAL_VERSION := -pcd1
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
@@ -9,14 +10,16 @@ export INSTALL_MOD_PATH = ${PWD}/out
 ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 	mkdir ${INSTALL_PATH}
 	cd linux \
-	&& $(MAKE) install modules_install \
-		headers_install INSTALL_HDR_PATH=${PWD}/out
+	&& make install \
+		modules_install \
+		INSTALL_HDR_PATH=${PWD}/out headers_install
+	depmod -b ${INSTALL_PATH} ${KERNEL_VERSION}-grsec${LOCAL_VERSION}
 	tar -C ${INSTALL_PATH} -cf out.tar lib
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
 
 linux/arch/x86_64/boot/bzImage: linux
 	cd linux \
-	&& make -j${JOBS}
+	&& make -j${JOBS} LOCALVERSION=${LOCAL_VERSION}
 
 linux: linux.tar.xz grsec.patch
 	tar xf linux.tar.xz
