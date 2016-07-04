@@ -3,16 +3,20 @@ BUSYBOX_VERSION := 1.25.0
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 CC = ${PWD}/../include/bin/musl-gcc
-export CC
+CC += -I${PWD}/../kernel/out/include
 
+all: busybox
+	cd busybox; make TARGET_ARCH="x86_64" HOSTCC="${CC} -static" CC="${CC} -static" V=1 install
+	cp init busybox/_install
+	rm busybox/_install/linuxrc
+	mkdir -p busybox/_install/usr/share/udhcpc
+	cp busybox/examples/udhcp/simple.script busybox/_install/usr/share/udhcpc/default.script
+	tar -C busybox/_install -cf out.tar .
 
-all: busybox.tar.bz2
+busybox: busybox.tar.bz2
 	tar xf busybox.tar.bz2
-	cp busybox.config busybox-${BUSYBOX_VERSION}/.config
-	make -C busybox-${BUSYBOX_VERSION} install
-	cp init busybox-${BUSYBOX_VERSION}/_install
-	rm busybox-${BUSYBOX_VERSION}/_install/linuxrc
-	tar -C busybox-${BUSYBOX_VERSION}/_install -cf out.tar .
+	mv busybox-${BUSYBOX_VERSION} busybox
+	cp busybox.config busybox/.config
 
 busybox.tar.bz2:
 	wget http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2 \
