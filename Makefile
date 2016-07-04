@@ -40,7 +40,7 @@ components: libc
 	@for dir in */Makefile; do \
 		[ "$$dir" = "kernel/Makefile" ] && continue; \
 		[ "$$dir" = "musl/Makefile" ] && continue; \
-		make -C "$$(dirname "$$dir")" >&2; \
+		make -C "$$(dirname "$$dir")" >&2 || exit $$?; \
 	done
 
 out: kernel.gz components
