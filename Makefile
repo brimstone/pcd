@@ -1,6 +1,6 @@
 PCD_VERSION := 0.3
 
-ifdef WITH_DOCKER
+ifneq ($(shell which docker),)
 .DEFAULT_GOAL := docker
 .PHONY: docker_image docker
 docker_image:
