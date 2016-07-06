@@ -1,22 +1,32 @@
 #!/bin/sh
 # devtmpfs does not get automounted for initramfs
 
-export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export PATH=/sbin:/bin
 mkdir /dev
-/bin/mount -t devtmpfs devtmpfs /dev
+mount -t devtmpfs devtmpfs /dev
 exec 0</dev/console
 exec 1>/dev/console
 exec 2>/dev/console
 
-/bin/mkdir /proc
-/bin/mount -t proc proc /proc
-/bin/mount -o remount,rw /
-/bin/mkdir -p /dev/pts
-/bin/mkdir -p /dev/shm
+mkdir /proc
+mount -t proc proc /proc
+
+mkdir /sys
+mount -t sysfs sysfs /sys
+
+mount -o remount,rw /
+
+mkdir -p /dev/pts
+mount -t devpts devpts /dev/pts
+
+mkdir -p /dev/shm
+
+mkdir /tmp
 /bin/mount -a
 /bin/hostname -F /etc/hostname
 
-find /sys -name modalias -exec cat \{\} \; | xargs /sbin/modprobe -a >/dev/null 2>/dev/null
+find /sys -name modalias -exec cat \{\} \; \
+| xargs /sbin/modprobe -a >/dev/null 2>/dev/null
 
 for m in sd_mod sr_mod isofs ext4; do
 	modprobe "$m"
@@ -35,4 +45,4 @@ ifconfig lo up
 sysctl -p
 
 # start services
-exec runsvdir -P -s /usr/sbin/runit-signal /service
+exec runsvdir -P -s /sbin/runit-signal /service
