@@ -1,0 +1,27 @@
+#!/bin/sh
+
+sv status /service/syslog | grep -q '^run' || exit
+
+BIP=""
+. /etc/config/docker
+[ -z "$BIP" ] && BIP="172.17.0.1/24"
+
+exec 2>&1
+
+[ -d /data/docker ] || mkdir /data/docker
+
+[ -d /var/lib/docker ] || mkdir /var/lib/docker
+
+[ -z "$(mount | awk '$3 == "/var/lib/docker"')" ] \
+&& mount -o bind /data/docker /var/lib/docker
+
+/sbin/cgroupfs-mount
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+export DOCKER_RAMDISK=true
+
+exec docker daemon -s=overlay \
+	--log-driver=syslog \
+	--log-opt=syslog-facility=local0 \
+	-H=unix:///var/run/docker.sock \
+	-H=tcp://0.0.0.0:2375 \
+	--bip="$BIP"
