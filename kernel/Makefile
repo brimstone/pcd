@@ -21,19 +21,19 @@ linux/arch/x86_64/boot/bzImage: linux
 	cd linux \
 	&& make -j${JOBS} LOCALVERSION=${LOCAL_VERSION}
 
-linux: linux.tar.xz grsec.patch
-	tar xf linux.tar.xz
+linux: ../download/linux.tar.xz ../download/grsec.patch
+	tar xf ../download/linux.tar.xz
 	mv linux-${KERNEL_VERSION} linux
 	cp kernel.config linux/.config
-	patch -d linux -p1 < grsec.patch
+	patch -d linux -p1 < ../download/grsec.patch
 	
-linux.tar.xz:
+../download/linux.tar.xz:
 	wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${KERNEL_VERSION}.tar.xz \
-		--progress=bar:force:noscroll -O linux.tar.xz
+		--progress=bar:force:noscroll -O ../download/linux.tar.xz
 
-grsec.patch:
+../download/grsec.patch:
 	wget https://grsecurity.net/test/grsecurity-${GRSEC_VERSION}.patch \
-		--progress=bar:force:noscroll -O grsec.patch
+		--progress=bar:force:noscroll -O ../download/grsec.patch
 
 clean:
 	-rm linux.tar.xz
