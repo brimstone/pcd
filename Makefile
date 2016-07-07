@@ -8,10 +8,10 @@ docker_image:
 
 docker: docker_image
 	@echo "Building with docker"
-	docker run --rm -i pcd:${PCD_VERSION} make tar | tar -xC output
+	docker run --rm -i -v /tmp/pcd/download:/buildroot/download pcd:${PCD_VERSION} make tar | tar -xC output
 
 docker_debug: docker_image
-	docker run --rm -it pcd:${PCD_VERSION}
+	docker run --rm -it -v /tmp/pcd/download:/buildroot/download pcd:${PCD_VERSION}
 endif
 
 KVMSERIAL=-nographic
