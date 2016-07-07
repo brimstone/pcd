@@ -55,6 +55,7 @@ out: kernel.gz components
 		[ "$$tar" = "busybox/out.tar" ] && continue; \
 		tar -xf "$$tar" -C out >&2; \
 	done
+	@cat out/etc/ssl/certs/* > out/etc/ssl/certs/ca-certificates.crt
 
 initrd: out
 	@echo "Building initrd" >&2
