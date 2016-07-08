@@ -1,6 +1,8 @@
-KERNEL_VERSION := 4.6.3
-GRSEC_VERSION := 3.1-4.6.3-201607060823
-LOCAL_VERSION := _${GRSEC}-pcd_0.3-$(shell date --utc +"%Y%d%mT%H%M%SZ")
+PCD_VERSION ?= $(shell git describe --tags --always --dirty)
+
+KERNEL_VERSION ?= 4.6.3
+GRSEC_VERSION ?= 3.1-4.6.3-201607060823
+LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)

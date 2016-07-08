@@ -1,4 +1,5 @@
-PCD_VERSION := 0.3
+PCD_VERSION ?= $(shell git describe --tags --always --dirty)
+export PCD_VERSION
 
 ifneq ($(shell which docker),)
 .DEFAULT_GOAL := docker
@@ -8,10 +9,16 @@ docker_image:
 
 docker: docker_image
 	@echo "Building with docker"
-	docker run --rm -i -v /tmp/pcd/download:/buildroot/download pcd:${PCD_VERSION} make tar | tar -xC output
+	docker run --rm -i \
+		-e PCD_VERSION \
+		-v /tmp/pcd/download:/buildroot/download \
+		pcd:${PCD_VERSION} make tar | tar -xC output
 
 docker_debug: docker_image
-	docker run --rm -it -v /tmp/pcd/download:/buildroot/download pcd:${PCD_VERSION}
+	docker run --rm -it \
+		-e PCD_VERSION \
+		-v /tmp/pcd/download:/buildroot/download \
+		pcd:${PCD_VERSION}
 endif
 
 KVMSERIAL=-nographic
@@ -19,7 +26,7 @@ ifdef GUI
 	KVMSERIAL=-serial stdio
 endif
 
-KVMSOURCE=-cdrom output/pcd.iso -boot d
+KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
 	KVMSOURCE=-kernel output/kernel.gz -initrd output/initrd.xz -append "console=ttyS0"
 endif
@@ -68,7 +75,7 @@ initrd.xz: initrd
 .PHONY: tar	
 tar: iso
 	@echo "Extracting output files" >&2
-	@tar -cf - pcd.iso
+	@tar -cf - pcd-${PCD_VERSION}.iso
 	@echo "Export complete" >&2
 
 .PHONY: clean
@@ -92,7 +99,9 @@ iso: all
 	@echo "      kernel kernel.gz" >> iso/isolinux.cfg
 	@echo "      initrd initrd.xz" >> iso/isolinux.cfg
 	@echo "      append audit=1" >> iso/isolinux.cfg
-	@genisoimage -o pcd.iso -b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -J -V pcd iso/ >&2
+	@genisoimage -o pcd-${PCD_VERSION}.iso \
+		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
+		-J -V pcd iso/ >&2
 
 kvm: pcd.qcow2
 	kvm -m 1024 \
