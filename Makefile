@@ -1,6 +1,10 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
 
+ifneq (${CACHE},)
+CACHE := -v /tmp/pcd/download:/buildroot/download
+endif
+
 ifneq ($(shell which docker),)
 .DEFAULT_GOAL := docker
 .PHONY: docker_image docker
@@ -11,13 +15,13 @@ docker: docker_image
 	@echo "Building with docker"
 	docker run --rm -i \
 		-e PCD_VERSION \
-		-v /tmp/pcd/download:/buildroot/download \
+		${CACHE} \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 
-docker_debug: docker_image
+debug: docker_image
 	docker run --rm -it \
 		-e PCD_VERSION \
-		-v /tmp/pcd/download:/buildroot/download \
+		${CACHE} \
 		pcd:${PCD_VERSION}
 endif
 
