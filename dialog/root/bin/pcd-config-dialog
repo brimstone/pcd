@@ -1,0 +1,63 @@
+#!/bin/sh
+
+# Make the display never blank
+printf '\33[9;0]\33[14;0]'
+. /etc/os-release
+
+DIALOGOPTS="--backtitle \"$PRETTY_NAME - $(hostname)\" --timeout 120 --no-tags"
+export DIALOGOPTS
+
+confirm(){
+	dialog --defaultno --yesno "$1" 0 0
+}
+
+adminmenu(){
+	pass=$(dialog --passwordbox "Enter Maintenance Password" 10 40 2>&1 1>&3)
+	if [ "$pass" != "asdf" ]; then
+		# sleep 60
+		dialog --sleep 20 --infobox "Password incorrect" 10 20
+		return
+	fi
+	case "$(dialog \
+		--keep-window \
+		--no-cancel \
+		--title "Admin menu" \
+		--menu "" 14 40 8 \
+		network Network \
+		shell Shell \
+		2>&1 1>&3)" in
+	network)
+		dialog --sleep 5 --infobox "Network configuration here" 10 20
+	;;
+esac
+}
+
+while true; do
+	case "$(dialog \
+		--keep-window \
+		--no-cancel \
+		--title "Main Menu" \
+		--menu "" 14 40 8 \
+		configure Configure \
+		reboot Reboot \
+		poweroff Poweroff \
+		shell Shell \
+		2>&1 1>&3)" in
+	configure)
+		adminmenu
+	;;
+	reboot)
+		confirm "Are you sure you want to reboot?" \
+		&& reboot \
+		&& sleep 60
+	;;
+	poweroff)
+		confirm "Are you sure you want to poweroff?" \
+		&& poweroff \
+		&& sleep 60
+	;;
+	shell)
+		/bin/login -f root
+	;;
+esac
+done 3>&1
