@@ -1,7 +1,7 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
 KERNEL_VERSION ?= 4.6.3
-GRSEC_VERSION ?= 3.1-4.6.3-201607060823
+GRSEC_VERSION ?= 3.1-4.6.3-201607070721
 LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
