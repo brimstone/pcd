@@ -56,9 +56,7 @@ components: libc
 
 out: kernel.gz components
 	@echo "Extracting compiled modules to output directory" >&2
-	@mkdir -p out/dev/pts >&2
-	@mknod out/dev/console c 5 1 >&2
-	@# TODO loop over every directory in $PWD
+	@mkdir -p out >&2
 	@tar -xf kernel/out.tar -C out >&2
 	@tar -xf busybox/out.tar -C out >&2
 	@for tar in */out.tar; do \
