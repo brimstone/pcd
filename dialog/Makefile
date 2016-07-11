@@ -1,6 +1,6 @@
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 PWD = $(shell pwd)
-CC = ${PWD}/../include/bin/musl-gcc
+CC = ${PWD}/../include/bin/musl-gcc -static
 export CC
 CFLAGS = -I ${PWD}/build/include -L ${PWD}/build/lib
 export CFLAGS
@@ -22,8 +22,7 @@ dialog: ncurses ../download/dialog.tar.gz
 	tar xf ../download/dialog.tar.gz
 	mv dialog-${DIALOG_VERSION} dialog
 	cd dialog \
-	&& ./configure --includedir="${PWD}/build/include" --libdir="${PWD}/build/lib" \
-	&& echo "#define HAVE_NCURSES_NCURSES_H 1" >> dlg_config.h \
+	&& ./configure --with-ncursesw --includedir="${PWD}/build/include" \
 	&& make -j${JOBS} DESTDIR="${PWD}/build" install
 
 directories:
@@ -39,7 +38,7 @@ ncurses: ../download/ncurses.tar.gz
 	tar xf ../download/ncurses.tar.gz
 	mv ncurses-${NCURSES_VERSION} ncurses
 	cd ncurses \
-	&& CPPFLAGS="-P" ./configure --prefix=/ --without-cxx \
+	&& CPPFLAGS="-P" ./configure --prefix=/ --without-cxx --enable-widec \
 	&& make -j${JOBS} DESTDIR="${PWD}/build" install
 	
 
