@@ -6,10 +6,8 @@ export GOPATH = ${PWD}
 all:
 	go get -d -v -u github.com/brimstone/go-pcd
 	mkdir root/bin
-	go build -v -a -installsuffix cgo \
-		-ldflags="-linkmode external -extldflags \"-static\" -s -w" \
-		-o root/bin/pcd \
-		github.com/brimstone/go-pcd
-	file root/bin/pcd
+	cd ${GOPATH}/src/github.com/brimstone/go-pcd \
+	&& make \
+	&& mv pcd ${PWD}/root/bin
 	tar -cf out.tar -C root .
 	
