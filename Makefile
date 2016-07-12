@@ -100,7 +100,7 @@ iso: all
 	@echo "label pcd" >> iso/isolinux.cfg
 	@echo "      kernel kernel.gz" >> iso/isolinux.cfg
 	@echo "      initrd initrd.xz" >> iso/isolinux.cfg
-	@echo "      append audit=1" >> iso/isolinux.cfg
+	@echo "      append quiet audit=1" >> iso/isolinux.cfg
 	@genisoimage -o pcd-${PCD_VERSION}.iso \
 		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
 		-J -V pcd iso/ >&2
