@@ -1,3 +1,4 @@
+include ../util.mk
 MUSL_VERSION := 1.1.14
 
 PWD = $(shell pwd)
@@ -11,6 +12,7 @@ all: ../download/musl.tar.gz
 	&& make -j${JOBS} \
 	&& make install
 
-../download/musl.tar.gz:
-	wget http://www.musl-libc.org/releases/musl-1.1.14.tar.gz \
-		--progress=bar:force:noscroll -O ../download/musl.tar.gz
+$(eval $(call cache,\
+http://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz, \
+../download/musl.tar.gz, \
+35f6c00c84a6091bd5dab29eedde7508dae755ead92dcc0239f3677d1055b9b5))

@@ -1,3 +1,4 @@
+include ../util.mk
 IPTABLES_VERSION := 1.6.0
 LIBNFTNL_VERSION := 1.0.6
 LIBMNL_VERSION := 1.0.4
@@ -8,8 +9,8 @@ export CC
 
 all: iptables
 
-iptables: libnftnl iptables.tar.bz2
-	tar xf iptables.tar.bz2
+iptables: libnftnl ../download/iptables.tar.bz2
+	tar xf ../download/iptables.tar.bz2
 	mv iptables-${IPTABLES_VERSION} iptables
 	cd iptables \
 	&& ./configure \
@@ -30,12 +31,13 @@ iptables: libnftnl iptables.tar.bz2
 	mv ${PWD}/out/sbin/* ${PWD}/root/sbin/
 	tar -cf out.tar -C root .
 
-iptables.tar.bz2:
-	wget http://www.netfilter.org/projects/iptables/files/iptables-${IPTABLES_VERSION}.tar.bz2 \
-		--progress=bar:force:noscroll -O iptables.tar.bz2
+$(eval $(call cache,\
+http://www.netfilter.org/projects/iptables/files/iptables-${IPTABLES_VERSION}.tar.bz2, \
+../download/iptables.tar.bz2, \
+4bb72a0a0b18b5a9e79e87631ddc4084528e5df236bc7624472dcaa8480f1c60))
 
-libnftnl: libmnl libnftnl.tar.bz2
-	tar xf libnftnl.tar.bz2
+libnftnl: libmnl ../download/libnftnl.tar.bz2
+	tar xf ../download/libnftnl.tar.bz2
 	mv libnftnl-${LIBNFTNL_VERSION} libnftnl
 	cd libnftnl \
 	&& ./configure \
@@ -50,12 +52,13 @@ libnftnl: libmnl libnftnl.tar.bz2
 		V=1 \
 		all install
 
-libnftnl.tar.bz2:
-	wget http://netfilter.org/projects/libnftnl/files/libnftnl-${LIBNFTNL_VERSION}.tar.bz2 \
-		--progress=bar:force:noscroll -O libnftnl.tar.bz2
+$(eval $(call cache,\
+http://netfilter.org/projects/libnftnl/files/libnftnl-${LIBNFTNL_VERSION}.tar.bz2, \
+../download/libnftnl.tar.bz2, \
+ad3b932a39a1e567308e91b683b32239a5e1aea9b4582dfffe2288c3400ab07e))
 
-libmnl: libmnl.tar.bz2
-	tar xf libmnl.tar.bz2
+libmnl: ../download/libmnl.tar.bz2
+	tar xf ../download/libmnl.tar.bz2
 	mv libmnl-${LIBMNL_VERSION} libmnl
 	cd libmnl \
 	&& ./configure \
@@ -68,6 +71,7 @@ libmnl: libmnl.tar.bz2
 		V=1 \
 		all install
 
-libmnl.tar.bz2:
-	wget http://netfilter.org/projects/libmnl/files/libmnl-${LIBMNL_VERSION}.tar.bz2 \
-		--progress=bar:force:noscroll -O libmnl.tar.bz2
+$(eval $(call cache,\
+http://netfilter.org/projects/libmnl/files/libmnl-${LIBMNL_VERSION}.tar.bz2, \
+../download/libmnl.tar.bz2, \
+171f89699f286a5854b72b91d06e8f8e3683064c5901fb09d954a9ab6f551f81))

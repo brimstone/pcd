@@ -9,6 +9,8 @@ JOBS = $(shell grep -c processor /proc/cpuinfo)
 export INSTALL_PATH = ${PWD}/out
 export INSTALL_MOD_PATH = ${PWD}/out
 
+include ../util.mk
+
 ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 	mkdir ${INSTALL_PATH}
 	cd linux \

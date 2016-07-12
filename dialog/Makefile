@@ -1,3 +1,4 @@
+include ../util.mk
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 PWD = $(shell pwd)
 CC = ${PWD}/../include/bin/musl-gcc -static
@@ -30,9 +31,10 @@ directories:
 	mkdir -p ${PWD}/build/lib
 
 
-../download/dialog.tar.gz:
-	wget ftp://invisible-island.net/dialog/dialog-${DIALOG_VERSION}.tgz \
-		--progress=bar:force:noscroll -O ../download/dialog.tar.gz
+$(eval $(call cache,\
+ftp://invisible-island.net/dialog/dialog-${DIALOG_VERSION}.tgz, \
+../download/dialog.tar.gz, \
+47f5870876e778aa2902f2e91b4070418d4651b647e1a67a94127cb8aab5b5eb))
 
 ncurses: ../download/ncurses.tar.gz
 	tar xf ../download/ncurses.tar.gz
@@ -41,7 +43,7 @@ ncurses: ../download/ncurses.tar.gz
 	&& CPPFLAGS="-P" ./configure --prefix=/ --without-cxx --enable-widec \
 	&& make -j${JOBS} DESTDIR="${PWD}/build" install
 	
-
-../download/ncurses.tar.gz:
-	wget ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz \
-		--progress=bar:force:noscroll -O ../download/ncurses.tar.gz
+$(eval $(call cache,\
+ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz, \
+../download/ncurses.tar.gz, \
+f551c24b30ce8bfb6e96d9f59b42fbea30fa3a6123384172f9e7284bcf647260))
