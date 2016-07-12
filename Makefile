@@ -1,8 +1,8 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
 
-ifneq (${CACHE},)
-CACHE := -v /tmp/pcd/download:/buildroot/download
+ifneq ($(CACHE),)
+cachedir := -v /tmp/pcd/download:/buildroot/download
 endif
 
 ifneq ($(shell which docker),)
@@ -15,13 +15,13 @@ docker: docker_image
 	@echo "Building with docker"
 	docker run --rm -i \
 		-e PCD_VERSION \
-		${CACHE} \
+		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 
 debug: docker_image
 	docker run --rm -it \
 		-e PCD_VERSION \
-		${CACHE} \
+		$(cachedir) \
 		pcd:${PCD_VERSION}
 endif
 
