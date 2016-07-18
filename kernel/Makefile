@@ -18,7 +18,8 @@ ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 		modules_install \
 		INSTALL_HDR_PATH=${PWD}/out headers_install
 	depmod -b ${INSTALL_PATH} ${KERNEL_VERSION}-grsec${LOCAL_VERSION}
-	tar -C ${INSTALL_PATH} -cf out.tar lib
+	cp linux/System.map ${INSTALL_PATH}
+	tar -C ${INSTALL_PATH} -cf out.tar lib System.map
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
 
 linux/arch/x86_64/boot/bzImage: linux
