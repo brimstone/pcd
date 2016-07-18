@@ -32,7 +32,7 @@ endif
 
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
-	KVMSOURCE=-kernel output/kernel.gz -initrd output/initrd.xz -append "console=ttyS0"
+	KVMSOURCE=-kernel output/kernel.gz -initrd output/initrd.xz -append "console=ttyS0 initcall_debug"
 endif
 
 .PHONY: all
