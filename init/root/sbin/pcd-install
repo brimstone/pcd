@@ -1,0 +1,51 @@
+#!/bin/sh
+
+set -euo pipefail
+
+if [ $# = 1 ]; then
+	# if there's only one argument, assume it's the install target
+	TARGET="$1"
+	# also assume our install media is in /dev/sr0 and is less than 100MB
+	dd if=/dev/sr0 of=/tmp/cd.iso bs=1M count=100 >/dev/null
+	MEDIA="/tmp/cd.iso"
+elif [ $# = 2 ]; then
+	# first is install media
+	MEDIA="$1"
+	# second is target device
+	TARGET="$2"
+else
+	echo "Usage: $0 </path/to/iso> <device>" >&2
+	exit 1
+fi
+
+if ! mount -o loop "$MEDIA" /mnt; then
+	echo "Unable to mount install media \"$MEDIA\"" >&2
+	exit 1
+fi
+
+cd /mnt
+
+if [ -z "${NO_VERIFY:-}" ] && ! gpg --verify sha256sum.gpg; then
+	echo "Verification check failed" >&2
+	cd /
+	umount /mnt
+	exit 1
+fi
+
+ret=0
+
+echo "Stoppping docker"
+sv stop /service/docker
+
+/bin/sh installer "$TARGET" || ret=$?
+
+if [ "$ret" != 0 ]; then
+	echo 'Install failed!'
+fi
+
+cd /
+
+umount /mnt
+
+echo "Starting docker"
+sv start /service/docker
