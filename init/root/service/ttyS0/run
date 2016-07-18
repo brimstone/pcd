@@ -4,4 +4,4 @@ exec 1>/dev/ttyS0
 exec 2>/dev/ttyS0
 
 cd /
-exec /bin/sh
+/bin/login -f root
