@@ -94,8 +94,12 @@ iso: all
 	@cp initrd.xz iso/initrd.xz >&2
 	@cp kernel.gz iso/kernel.gz >&2
 	@cp installer iso >&2
-	@cd iso; sha256sum initrd.xz kernel.gz installer > sha256sum >&2
-	@cd iso; gpg --sign sha256sum >&2 || true
+	@cd iso; sha256sum initrd.xz kernel.gz installer >sha256sum
+	@if [ -e signingkey.priv ]; then \
+		gpg --import signingkey.priv >&2 \
+		&& cd iso \
+		&& gpg --sign sha256sum >&2\
+		; fi
 	@echo "default pcd" > iso/isolinux.cfg
 	@echo "label pcd" >> iso/isolinux.cfg
 	@echo "      kernel kernel.gz" >> iso/isolinux.cfg
