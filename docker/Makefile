@@ -1,6 +1,6 @@
 include ../util.mk
-DOCKER_VERSION := 1.12.0-rc4
-DOCKER_CHANNEL := test
+DOCKER_VERSION := 1.12.0
+DOCKER_CHANNEL := get
 
 all: ../download/docker.tar.gz
 	tar xf ../download/docker.tar.gz
@@ -10,4 +10,4 @@ all: ../download/docker.tar.gz
 $(eval $(call cache,\
 https://${DOCKER_CHANNEL}.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz, \
 ../download/docker.tar.gz, \
-fca3e76267d5dc9f6f9d42341c7daf525032a322e2ae16f0e69d71541abb6b6d))
+3dd07f65ea4a7b4c8829f311ab0213bca9ac551b5b24706f3e79a97e22097f8b))
