@@ -6,20 +6,24 @@ cachedir := -v /tmp/pcd/download:/buildroot/download
 endif
 
 ifneq ($(shell which docker),)
+DOCKER ?= docker
+endif
+
+ifneq (${DOCKER},)
 .DEFAULT_GOAL := docker
 .PHONY: docker_image docker
 docker_image:
-	docker build -t pcd:${PCD_VERSION} . >&2
+	${DOCKER} build -t pcd:${PCD_VERSION} . >&2
 
 docker: docker_image
 	@echo "Building with docker"
-	docker run --rm -i \
+	${DOCKER} run --rm -i \
 		-e PCD_VERSION \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 
 debug: docker_image
-	docker run --rm -it \
+	${DOCKER} run --rm -it \
 		-e PCD_VERSION \
 		$(cachedir) \
 		pcd:${PCD_VERSION}
