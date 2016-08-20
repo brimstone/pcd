@@ -1,7 +1,7 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.6.5
-GRSEC_VERSION ?= 3.1-4.6.5-201607312210
+KERNEL_VERSION ?= 4.7.1
+GRSEC_VERSION ?= 3.1-4.7.1-201608161813
 LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
@@ -35,12 +35,12 @@ linux: ../download/linux.tar.xz ../download/grsec.patch
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${KERNEL_VERSION}.tar.xz, \
 ../download/linux.tar.xz, \
-7e2d53c8a36a159c444be8f452eae898fadc1f1862fe470a36c836c3d1d613c5))
+25583319c383826e0bd5706e04d5fdd747c6edaad8f19b7dce9ca2d509fb8136))
 
 $(eval $(call cache,\
 https://grsecurity.net/test/grsecurity-${GRSEC_VERSION}.patch,\
 ../download/grsec.patch, \
-1c5c85ebb5cab533196a05a37fd6e4c2ea5c09bdf2b5d571c77b8a04b8b9b69d))
+f2de5ba6948de3539ffd7fb1fede35acce9b2165efd8b8a49a87d6b31ff2ea5e))
 
 clean:
 	-rm linux.tar.xz
