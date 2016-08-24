@@ -37,7 +37,7 @@ gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 	mv out/share/gnupg/dirmngr-conf.skel root/share/gnupg/
 	ln -s gpg2 root/bin/gpg
 	gpg --import signingkey.pub
-	cp ${HOME}/.gnupg/pubring.gpg root/root/.gnupg/
+	cp ${HOME}/.gnupg/pubring.kbx root/root/.gnupg/
 	tar -cf out.tar -C root .
 
 $(eval $(call cache, \
