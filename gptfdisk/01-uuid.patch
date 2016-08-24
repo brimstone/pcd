@@ -1,0 +1,38 @@
+diff -ru gptfdisk-1.0.1/Makefile gptfdisk/Makefile
+--- gptfdisk-1.0.1/Makefile	2015-10-18 22:35:18.000000000 +0000
++++ gptfdisk/Makefile	2016-07-18 17:10:30.204542896 +0000
+@@ -22,7 +22,7 @@
+ #	$(CXX) $(LIB_OBJS) cgdisk.o gptcurses.o $(LDFLAGS) -licuio -licuuc -luuid -lncurses -o cgdisk
+ 
+ sgdisk: $(LIB_OBJS) sgdisk.o gptcl.o
+-	$(CXX) $(LIB_OBJS) sgdisk.o gptcl.o $(LDFLAGS) -luuid -lpopt -o sgdisk
++	$(CXX) $(LIB_OBJS) sgdisk.o gptcl.o $(LDFLAGS) -lpopt -o sgdisk
+ #	$(CXX) $(LIB_OBJS) sgdisk.o gptcl.o $(LDFLAGS) -licuio -licuuc -luuid -lpopt -o sgdisk
+ 
+ fixparts: $(MBR_LIB_OBJS) fixparts.o
+Only in gptfdisk: attributes.o
+Only in gptfdisk: basicmbr.o
+Only in gptfdisk: bsd.o
+Only in gptfdisk: crc32.o
+Only in gptfdisk: diskio-unix.o
+Only in gptfdisk: diskio.o
+Only in gptfdisk: gpt.o
+Only in gptfdisk: gptpart.o
+diff -ru gptfdisk-1.0.1/guid.h gptfdisk/guid.h
+--- gptfdisk-1.0.1/guid.h	2015-10-18 22:35:18.000000000 +0000
++++ gptfdisk/guid.h	2016-07-18 17:10:17.220531830 +0000
+@@ -26,8 +26,7 @@
+    #endif
+ typedef unsigned char my_uuid_t[16];
+ #else // Not Windows
+-#include <uuid/uuid.h>
+-typedef uuid_t my_uuid_t;
++typedef unsigned char my_uuid_t[16];
+ #endif
+ 
+ using namespace std;
+Only in gptfdisk: guid.o
+Only in gptfdisk: mbr.o
+Only in gptfdisk: mbrpart.o
+Only in gptfdisk: parttypes.o
+Only in gptfdisk: support.o
