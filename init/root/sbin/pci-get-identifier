@@ -1,0 +1,10 @@
+#!/bin/sh
+hash="$(find /sys -name 'modalias' -exec cat \{\} + \
+| grep '^pci' \
+| sed -r 's/pci:v0000([0-9A-F]{4})d0000([0-9A-F]{4}).*$/\1 \2/' \
+| sort \
+| uniq \
+| gzip -9 \
+| base64 -w 0)"
+echo "Hardware hash:"
+echo "$hash"

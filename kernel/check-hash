@@ -1,0 +1,17 @@
+#!/bin/sh
+
+find_files(){
+	echo "$1" | base64 -d | zcat | while read -r vendor device; do
+		vendor_name="$(grep -i "0x$vendor" -m 1 include/linux/pci_ids.h | awk '{print $2}')"
+		files="$(grep -lr "$vendor_name" drivers/ \
+		| xargs grep -l "0x$device" \
+		| grep -v "drivers/pci/quirks.c" \
+		| grep -v "drivers/pnp/quirks.c" \
+		| grep -v "drivers/platform/"
+		)"
+		if [ -n "$files" ]; then
+			echo "Vendor: $vendor_name $vendor:$device"
+			echo "$files"
+		fi
+	done
+}
