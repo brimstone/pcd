@@ -28,7 +28,7 @@ gptfdisk: ../download/gptfdisk.tar.gz popt libuuid
 	&& make \
 		DESTDIR="${PWD}/out" \
 		sgdisk
-	
+
 
 $(eval $(call cache, \
 https://sourceforge.net/projects/gptfdisk/files/gptfdisk/${GPTFDISK_VERSION}/gptfdisk-${GPTFDISK_VERSION}.tar.gz/download, \
