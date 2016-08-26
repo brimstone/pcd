@@ -78,7 +78,7 @@ initrd.xz: initrd
 	@echo "Compressing initrd" >&2
 	@xz --check=crc32 -9 --keep initrd >&2
 
-.PHONY: tar	
+.PHONY: tar
 tar: iso
 	@echo "Extracting output files" >&2
 	@tar -cf - pcd-${PCD_VERSION}.iso
