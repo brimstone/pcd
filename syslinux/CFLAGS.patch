@@ -1,0 +1,54 @@
+diff -ru syslinux-6.04-pre1/extlinux/Makefile syslinux/extlinux/Makefile
+--- syslinux-6.04-pre1/extlinux/Makefile	2016-03-02 05:06:02.000000000 +0000
++++ syslinux/extlinux/Makefile	2016-08-25 23:11:38.213785495 +0000
+@@ -18,9 +18,8 @@
+ 
+ OPTFLAGS = -g -Os
+ INCLUDES = -I$(SRC) -I$(objdir) -I$(SRC)/../libinstaller
+-CFLAGS	 = $(GCCWARN) -Wno-sign-compare -D_FILE_OFFSET_BITS=64 \
++CFLAGS	+= $(GCCWARN) -Wno-sign-compare -D_FILE_OFFSET_BITS=64 \
+ 	   $(OPTFLAGS) $(INCLUDES)
+-LDFLAGS	 = 
+ 
+ SRCS     = main.c \
+ 	   mountinfo.c \
+diff -ru syslinux-6.04-pre1/linux/Makefile syslinux/linux/Makefile
+--- syslinux-6.04-pre1/linux/Makefile	2016-03-02 05:06:02.000000000 +0000
++++ syslinux/linux/Makefile	2016-08-25 23:11:31.479801183 +0000
+@@ -18,8 +18,7 @@
+ 
+ OPTFLAGS = -g -Os
+ INCLUDES = -I$(SRC) -I$(objdir) -I$(SRC)/../libinstaller
+-CFLAGS	 = $(GCCWARN) -D_FILE_OFFSET_BITS=64 $(OPTFLAGS) $(INCLUDES)
+-LDFLAGS	 = 
++CFLAGS	+= $(GCCWARN) -D_FILE_OFFSET_BITS=64 $(OPTFLAGS) $(INCLUDES)
+ 
+ SRCS     = syslinux.c \
+ 	   ../libinstaller/syslxopt.c \
+diff -ru syslinux-6.04-pre1/mtools/Makefile syslinux/mtools/Makefile
+--- syslinux-6.04-pre1/mtools/Makefile	2016-03-02 05:06:02.000000000 +0000
++++ syslinux/mtools/Makefile	2016-08-25 23:11:26.169813530 +0000
+@@ -2,8 +2,7 @@
+ 
+ OPTFLAGS = -g -Os
+ INCLUDES = -I$(SRC) -I$(objdir) -I$(SRC)/../libfat -I$(SRC)/../libinstaller
+-CFLAGS	 = $(GCCWARN) -D_FILE_OFFSET_BITS=64 $(OPTFLAGS) $(INCLUDES)
+-LDFLAGS	 = 
++CFLAGS	+= $(GCCWARN) -D_FILE_OFFSET_BITS=64 $(OPTFLAGS) $(INCLUDES)
+ 
+ SRCS     = syslinux.c \
+ 	   ../libinstaller/fs.c \
+diff -ru syslinux-6.04-pre1/utils/Makefile syslinux/utils/Makefile
+--- syslinux-6.04-pre1/utils/Makefile	2016-03-02 05:06:02.000000000 +0000
++++ syslinux/utils/Makefile	2016-08-25 23:12:14.025702101 +0000
+@@ -17,8 +17,8 @@
+ VPATH = $(SRC)
+ include $(MAKEDIR)/syslinux.mk
+ 
+-CFLAGS   = $(GCCWARN) -Os -fomit-frame-pointer -D_FILE_OFFSET_BITS=64 -I$(SRC)
+-LDFLAGS  = -O2
++CFLAGS  += $(GCCWARN) -Os -fomit-frame-pointer -D_FILE_OFFSET_BITS=64 -I$(SRC)
++LDFLAGS += -O2
+ 
+ C_TARGETS	 = isohybrid gethostip memdiskfind
+ SCRIPT_TARGETS	 = mkdiskimage
