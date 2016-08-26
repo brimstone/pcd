@@ -2,7 +2,6 @@
 # devtmpfs does not get automounted for initramfs
 
 export PATH=/sbin:/bin
-mkdir /dev
 mount -t devtmpfs devtmpfs /dev
 exec 0</dev/console
 exec 1>/dev/console
