@@ -46,19 +46,19 @@ check_boot(){
 }
 
 write_syslinuxcfg(){
-	mkdir -p /boot/extlinux
-	cat <<dog >/boot/extlinux/extlinux.cfg
+	mkdir -p /boot/syslinux
+	cat <<dog >/boot/syslinux/syslinux.cfg
 PROMPT 1
 DEFAULT 1
 TIMEOUT 30
 
 LABEL primary
-	KERNEL primary
-	APPEND initrd=primary.gz cgroup_enable=memory swapaccount=1
+	KERNEL /primary
+	APPEND initrd=/primary.xz cgroup_enable=memory swapaccount=1
 
 LABEL backup
-	KERNEL backup
-	APPEND initrd=backup.gz cgroup_enable=memory swapaccount=1
+	KERNEL /backup
+	APPEND initrd=/backup.xz cgroup_enable=memory swapaccount=1
 dog
 }
 
