@@ -27,12 +27,6 @@ mkdir /tmp
 find /sys -name modalias -exec cat \{\} \; \
 | xargs /sbin/modprobe -a >/dev/null 2>/dev/null
 
-for m in sd_mod sr_mod isofs ext4; do
-	modprobe "$m"
-done
-
-modprobe usbhid
-
 # make and mount /data
 [ -d /data ] || mkdir /data
 mount LABEL=DATA /data || true
