@@ -139,7 +139,7 @@ pcd.box:
 	packer.json
 
 reload-box:
-	vagrant box remove pcd
+	-vagrant box remove pcd
 	vagrant box add pcd.box --name pcd
 
 .PHONY: vagrant-service
