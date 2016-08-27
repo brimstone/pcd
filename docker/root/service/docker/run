@@ -2,6 +2,8 @@
 
 sv status /service/syslog | grep -q '^run' || exit
 
+[ -e /etc/resolv.conf ] || exit
+
 BIP=""
 . /etc/config/docker
 [ -z "$BIP" ] && BIP="172.17.0.1/24"
