@@ -8,9 +8,9 @@ BIP=""
 
 exec 2>&1
 
-[ -d /data/docker ] || mkdir /data/docker
+[ -d /data/docker ] || mkdir -p /data/docker
 
-[ -d /var/lib/docker ] || mkdir /var/lib/docker
+[ -d /var/lib/docker ] || mkdir -p /var/lib/docker
 
 [ -z "$(mount | awk '$3 == "/var/lib/docker"')" ] \
 && mount -o bind /data/docker /var/lib/docker
