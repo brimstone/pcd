@@ -49,7 +49,7 @@ write_syslinuxcfg(){
 	mkdir -p /boot/syslinux
 	cat <<dog >/boot/syslinux/syslinux.cfg
 PROMPT 1
-DEFAULT 1
+DEFAULT primary
 TIMEOUT 30
 
 LABEL primary
