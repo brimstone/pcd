@@ -22,8 +22,6 @@ export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 export DOCKER_RAMDISK=true
 
 exec docker daemon -s=overlay \
-	--log-driver=syslog \
-	--log-opt=syslog-facility=local0 \
 	-H=unix:///var/run/docker.sock \
 	-H=tcp://0.0.0.0:2375 \
 	--bip="$BIP"
