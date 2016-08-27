@@ -9,6 +9,11 @@ ifneq ($(shell which docker),)
 DOCKER ?= docker
 endif
 
+PACKERDEBUG=
+ifdef DEBUG
+	PACKERDEBUG=-var 'boot_debug=docker exec -it ssh /bin/sh<enter><wait10><wait10><wait10><wait10>touch /tmp/ssh.log; tail -f /tmp/ssh.log&'
+endif
+
 ifneq (${DOCKER},)
 .DEFAULT_GOAL := docker
 .PHONY: docker_image docker
@@ -126,3 +131,18 @@ kvm: pcd.qcow2
 pcd.qcow2:
 	qemu-img create -f qcow2 pcd.qcow2 20G
 
+pcd.box:
+	cd packer \
+	; ~/local/go/src/github.com/mitchellh/packer/bin/packer build \
+	${PACKERDEBUG} \
+	-var 'iso=${PWD}/output/pcd-${PCD_VERSION}.iso' \
+	packer.json
+
+reload-box:
+	vagrant box remove pcd
+	vagrant box add pcd.box --name pcd
+
+.PHONY: vagrant-service
+vagrant-service:
+	docker build -t vagrant vagrant-service
+	docker save vagrant > packer/http/vagrant.tar

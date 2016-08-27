@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "boot_debug": "",
+    "iso": ""
+  },
+  "builders": [
+    {
+      "name": "pcd",
+      "type": "virtualbox-iso",
+      "headless": false,
+      "guest_os_type": "Linux_64",
+      "disk_size": 102400,
+      "iso_url": "{{user `iso`}}",
+      "iso_checksum_type": "none",
+      "boot_command": [
+        "<down><down><down><enter>",
+        "pcd-install /dev/sda ",
+        "&& ",
+        "wget -O - http://{{ .HTTPIP }}:{{ .HTTPPort }}/vagrant.tar | docker load && ",
+        "docker run -d --name ssh -p 22:22 --cap-add=NET_ADMIN --net=host",
+        " --restart=always -v /bin/pcd:/bin/pcd:ro",
+        " --pid=host vagrant",
+        ";{{user `boot_debug`}}<enter>"
+      ],
+      "http_directory": "http",
+      "boot_wait": "20s",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "512"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "ssh_username": "vagrant",
+      "ssh_private_key_file": "insecure_private_key",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "10000s",
+      "shutdown_command": "shutdown -h now"
+    }
+  ],
+  "post-processors": [
+    {
+      "output": "../pcd.box",
+      "type": "vagrant"
+    }
+  ]
+}

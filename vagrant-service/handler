@@ -1,0 +1,48 @@
+#!/bin/sh
+
+log(){
+	[ -e "/tmp/ssh.log" ] && echo "$1" >> /tmp/ssh.log
+}
+
+log "\$*: $*"
+if [ "$1" = "" ]; then
+	exit
+elif [ "$*" = "bash -l" ] || [ "$*" = "sudo -E -H bash -l" ]; then
+	while read -r aline; do
+		log "$aline"
+		if [ "$aline" = "exit" ]; then
+			exit
+		elif [ "$aline" = "echo; printf /vagrant" ]; then
+			echo
+			printf "/vagrant"
+		elif [ "$aline" = "shutdown -h now" ]; then
+			kill -12 1
+		elif [ "${aline%% *}" = "hostnamectl" ]; then
+			pcd hostname "${aline##* }"
+		else
+			echo ""
+		fi
+	done
+elif [ "$*" = "shutdown -h now" ]; then
+	kill -12 1
+elif [ "$1" = "scp" ]; then
+	printf "\0"
+	read -r _ size _
+	printf "\0"
+	data="$(dd bs="$size" count=1 2>/dev/null)"
+	log "data: $data"
+	echo "$data" | while read -r aline; do
+		if echo "$aline" | grep -q "ifconfig"; then
+			$aline
+		elif [ "${aline%% *}" = "hostname" ]; then
+			pcd hostname "${aline##* }"
+		elif [ "${aline%% *}" = "bip" ]; then
+			pcd docker/bip "${aline##* }"
+		fi
+	done
+	printf "\0"
+	exit
+else
+	log "don't know how to handle $*"
+	exit
+fi
