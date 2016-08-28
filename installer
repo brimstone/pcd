@@ -54,19 +54,15 @@ TIMEOUT 30
 
 LABEL primary
 	KERNEL /primary
-	APPEND initrd=/primary.xz cgroup_enable=memory swapaccount=1
 
 LABEL backup
 	KERNEL /backup
-	APPEND initrd=/backup.xz cgroup_enable=memory swapaccount=1
 dog
 }
 
 copy_files(){
 	mv /boot/primary /boot/backup || true
-	mv /boot/primary.gz /boot/backup.gz || true
-	cp kernel.gz /boot/primary
-	cp initrd.xz /boot/primary.xz
+	cp primary /boot/primary
 }
 
 if [ -z "$1" ]; then

@@ -1,3 +1,4 @@
+PWD = $(shell pwd)
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
 
@@ -41,31 +42,39 @@ endif
 
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
-	KVMSOURCE=-kernel output/kernel.gz -initrd output/initrd.xz -append "console=ttyS0 initcall_debug"
+	KVMSOURCE=-kernel output/primary -append "console=ttyS0 initcall_debug"
 endif
 
 .PHONY: all
-all: kernel.gz components initrd.xz
+all: kernel.lz
 
-kernel.gz:
+.PHONY: kernel
+kernel:
 	@echo "Building kernel" >&2
 	@cd kernel && make >&2
-	@cp kernel/kernel.gz . >&2
 
+kernel.lz: kernel out
+	@cd kernel/linux \
+	&& make CONFIG_INITRAMFS_SOURCE=${PWD}/out LOCALVERSION=-${PCD_VERSION} >&2 \
+	&& cp arch/x86/boot/bzImage ../../kernel.lz >&2
+
+.PHONY: libc
 libc:
 	@cd musl && make >&2
 
 .PHONY: components
-components: libc
+components: libc kernel
 	@for dir in */Makefile; do \
 		[ "$$dir" = "kernel/Makefile" ] && continue; \
 		[ "$$dir" = "musl/Makefile" ] && continue; \
 		make -C "$$(dirname "$$dir")" >&2 || exit $$?; \
 	done
 
-out: kernel.gz components
+out: components
 	@echo "Extracting compiled modules to output directory" >&2
-	@mkdir -p out >&2
+	@mkdir -p out/dev >&2
+	@mknod out/dev/console c 136 0 >&2
+	@mknod out/dev/null c 1 3 >&2
 	@tar -xf kernel/out.tar -C out >&2
 	@tar -xf busybox/out.tar -C out >&2
 	@for tar in */out.tar; do \
@@ -92,18 +101,18 @@ tar: iso
 .PHONY: clean
 clean:
 	-rm initrd.xz
-	-rm kernel.gz
+	-rm kernel.lz
 	-rm out.tar
 
 iso: all
 	@rm -rf iso >&2
 	@mkdir iso >&2
-	@cp /usr/lib/ISOLINUX/isolinux.bin iso/ >&2
-	@cp /usr/lib/syslinux/modules/bios/ldlinux.c32 iso/ >&2
-	@cp initrd.xz iso/initrd.xz >&2
-	@cp kernel.gz iso/kernel.gz >&2
+	@cp syslinux/syslinux/bios/core/isolinux.bin iso/ >&2
+	@cp syslinux/syslinux/bios/com32/elflink/ldlinux/ldlinux.c32 iso/ >&2
+	@#cp initrd.xz iso/initrd.xz >&2
+	@cp kernel.lz iso/primary >&2
 	@cp installer iso >&2
-	@cd iso; sha256sum initrd.xz kernel.gz installer >sha256sum
+	@cd iso; sha256sum primary  installer >sha256sum
 	@if [ -e signingkey.priv ]; then \
 		gpg --import signingkey.priv >&2 \
 		&& cd iso \
@@ -111,9 +120,9 @@ iso: all
 		; fi
 	@echo "default pcd" > iso/isolinux.cfg
 	@echo "label pcd" >> iso/isolinux.cfg
-	@echo "      kernel kernel.gz" >> iso/isolinux.cfg
-	@echo "      initrd initrd.xz" >> iso/isolinux.cfg
-	@echo "      append quiet audit=1" >> iso/isolinux.cfg
+	@echo "      kernel primary" >> iso/isolinux.cfg
+	@#echo "      initrd initrd.xz" >> iso/isolinux.cfg
+	@#echo "      append" >> iso/isolinux.cfg
 	@genisoimage -o pcd-${PCD_VERSION}.iso \
 		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
 		-J -V pcd iso/ >&2
