@@ -25,7 +25,7 @@ syslinux: ../download/syslinux.tar.xz libuuid
 	mv syslinux-${SYSLINUX_VERSION}${SYSLINUX_PATCH} syslinux
 	cd syslinux \
 	&& patch -p1 < ../CFLAGS.patch \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out"
 
 $(eval $(call cache, \
@@ -38,7 +38,7 @@ libuuid: ../download/libuuid.tar.gz
 	mv libuuid-1.0.3 libuuid
 	cd libuuid \
 	&& ./configure --prefix=/ \
-	&& make install DESTDIR=${PWD}/build
+	&& make -j${JOBS} install DESTDIR=${PWD}/build
 
 $(eval $(call cache,\
 https://sourceforge.net/projects/libuuid/files/libuuid-${LIBUUID_VERSION}.tar.gz/download, \

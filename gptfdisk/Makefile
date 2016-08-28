@@ -25,7 +25,7 @@ gptfdisk: ../download/gptfdisk.tar.gz popt libuuid
 	tar xf ../download/gptfdisk.tar.gz
 	mv gptfdisk-${GPTFDISK_VERSION} gptfdisk
 	cd gptfdisk \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out" \
 		sgdisk
 
@@ -40,7 +40,7 @@ libuuid: ../download/libuuid.tar.gz
 	mv libuuid-1.0.3 libuuid
 	cd libuuid \
 	&& ./configure --prefix=/ \
-	&& make install DESTDIR=${PWD}/build
+	&& make -j${JOBS} install DESTDIR=${PWD}/build
 
 $(eval $(call cache,\
 https://sourceforge.net/projects/libuuid/files/libuuid-${LIBUUID_VERSION}.tar.gz/download, \
@@ -54,7 +54,7 @@ popt: ../download/popt.tar.gz
 	cd popt \
 	&& ./configure \
 		--prefix=/ \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/build" \
 		install
 

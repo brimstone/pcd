@@ -27,7 +27,7 @@ gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 		--with-npth-prefix="${PWD}/support" \
 		--with-zlib="${PWD}/support" \
 		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out" \
 		install
 	strip out/bin/gpg2
@@ -51,7 +51,7 @@ libgpg-error: ../download/libgpg-error.tar.bz2
 	cd libgpg-error \
 	&& ./configure \
 		--prefix=/ \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 
@@ -68,7 +68,7 @@ libgcrypt: ../download/libgcrypt.tar.bz2
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
 		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 
@@ -85,7 +85,7 @@ libassuan: ../download/libassuan.tar.bz2
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
 		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 
@@ -102,7 +102,7 @@ libksba: ../download/libksba.tar.bz2
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
 		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 
@@ -118,7 +118,7 @@ npth: ../download/npth.tar.bz2
 	&& ./configure \
 		--prefix=/ \
 		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 
@@ -134,7 +134,7 @@ zlib: ../download/zlib.tar.gz
 	cd zlib \
 	&& ./configure \
 		--prefix=/ \
-	&& make \
+	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
 

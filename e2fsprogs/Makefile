@@ -22,7 +22,7 @@ mkfs.ext4: ../download/e2fsprogs.tar.gz
 	mv e2fsprogs-${E2FSPROGS_VERSION} e2fsprogs
 	cd e2fsprogs \
 	&& ./configure --prefix=/ \
-	&& make install DESTDIR=${PWD}/out
+	&& make -j${JOBS} install DESTDIR=${PWD}/out
 
 $(eval $(call cache,\
 https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz/download, \

@@ -3,6 +3,7 @@ IPTABLES_VERSION := 1.6.0
 LIBNFTNL_VERSION := 1.0.6
 LIBMNL_VERSION := 1.0.4
 
+JOBS = $(shell grep -c processor /proc/cpuinfo)
 PWD = $(shell pwd)
 CC = ${PWD}/../include/bin/musl-gcc
 export CC
