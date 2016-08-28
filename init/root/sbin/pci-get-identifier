@@ -5,6 +5,7 @@ hash="$(find /sys -name 'modalias' -exec cat \{\} + \
 | sort \
 | uniq \
 | gzip -9 \
-| base64 -w 0)"
+| base64 \
+| tr -d '\n')"
 echo "Hardware hash:"
 echo "$hash"
