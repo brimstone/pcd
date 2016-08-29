@@ -4,14 +4,14 @@
   "name": "pcd",
   "versions": [
     {
-      "version": "0.1.1",
+      "version": "0.3.0",
       "status": "active",
       "description_html": "Box for PCD",
       "description_markdown": "Box for PCD",
       "providers": [
         {
           "name": "virtualbox",
-          "url": "https://github.com/brimstone/pcd/releases/download/0.1.1/pcd-0.1.1.box"
+          "url": "https://github.com/brimstone/pcd/releases/download/0.3.0/pcd-0.3.0.box"
         }
       ]
     }
