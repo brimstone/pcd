@@ -95,7 +95,7 @@ initrd.xz: initrd
 .PHONY: tar
 tar: iso
 	@echo "Extracting output files" >&2
-	@tar -cf - pcd-${PCD_VERSION}.iso
+	@tar -cf - --strip-components=1 pcd-${PCD_VERSION}.iso iso/primary
 	@echo "Export complete" >&2
 
 .PHONY: clean
