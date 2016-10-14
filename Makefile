@@ -45,29 +45,36 @@ ifdef KERNEL
 	KVMSOURCE=-kernel output/primary -append "console=ttyS0 initcall_debug"
 endif
 
+LOG ?= >/dev/null 2>/dev/null
+ifdef VERBOSE
+LOG = >&2
+endif
+
 .PHONY: all
 all: kernel.lz
 
 .PHONY: kernel
 kernel:
-	@echo "Building kernel" >&2
-	@cd kernel && make >&2
+	@echo "$$(date) Building kernel" >&2
+	@cd kernel && make </dev/null ${LOG}
 
 kernel.lz: kernel out
 	@cd kernel/linux \
-	&& make CONFIG_INITRAMFS_SOURCE=${PWD}/out LOCALVERSION=-${PCD_VERSION} >&2 \
+	&& make CONFIG_INITRAMFS_SOURCE=${PWD}/out LOCALVERSION=-${PCD_VERSION} ${LOG} \
 	&& cp arch/x86/boot/bzImage ../../kernel.lz >&2
 
 .PHONY: libc
 libc:
-	@cd musl && make >&2
+	@echo "$$(date) Building musl" >&2
+	@cd musl && make ${LOG}
 
 .PHONY: components
 components: libc kernel
 	@for dir in */Makefile; do \
 		[ "$$dir" = "kernel/Makefile" ] && continue; \
 		[ "$$dir" = "musl/Makefile" ] && continue; \
-		make -C "$$(dirname "$$dir")" >&2 || exit $$?; \
+		echo "$$(date) Building $$(dirname "$$dir")" >&2; \
+		make -C "$$(dirname "$$dir")" ${LOG} || exit $$?; \
 	done
 
 out: components
@@ -85,11 +92,11 @@ out: components
 	@cat out/etc/ssl/certs/* > out/etc/ssl/certs/ca-certificates.crt
 
 initrd: out
-	@echo "Building initrd" >&2
+	@echo "$$(date) Building initrd" >&2
 	@cd out && find . | cpio --create --format='newc' > ../initrd
 
 initrd.xz: initrd
-	@echo "Compressing initrd" >&2
+	@echo "$$(date) Compressing initrd" >&2
 	@xz --check=crc32 -9 --keep initrd >&2
 
 .PHONY: tar
