@@ -4,3 +4,6 @@ pcd.*
 .ccache
 test
 output
+*.box
+packer
+vagrant-service
