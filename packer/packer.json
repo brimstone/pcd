@@ -48,7 +48,7 @@
   ],
   "post-processors": [
     {
-      "output": "../pcd-{{user `version`}}.box",
+      "output": "../output/pcd-{{user `version`}}.box",
       "type": "vagrant"
     }
   ]
