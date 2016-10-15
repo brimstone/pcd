@@ -2,6 +2,6 @@
 out.tar
 output
 pcd.qcow2
-pcd.box
+pcd*.box
 tmp
 .vagrant

@@ -1,7 +1,8 @@
 {
   "variables": {
     "boot_debug": "",
-    "iso": ""
+    "iso": "",
+    "version": ""
   },
   "builders": [
     {
@@ -47,7 +48,7 @@
   ],
   "post-processors": [
     {
-      "output": "../pcd.box",
+      "output": "../pcd-{{user `version`}}.box",
       "type": "vagrant"
     }
   ]

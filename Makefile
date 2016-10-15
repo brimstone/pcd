@@ -147,11 +147,15 @@ kvm: pcd.qcow2
 pcd.qcow2:
 	qemu-img create -f qcow2 pcd.qcow2 20G
 
-pcd.box:
+.PHONY: pcd.box
+pcd.box: pcd-${PCD_VERSION}.box
+
+pcd-${PCD_VERSION}.box:
 	cd packer \
 	; ~/local/go/src/github.com/mitchellh/packer/bin/packer build \
 	${PACKERDEBUG} \
 	-var 'iso=${PWD}/output/pcd-${PCD_VERSION}.iso' \
+	-var 'version=${PCD_VERSION}' \
 	packer.json
 
 reload-box:
