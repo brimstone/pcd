@@ -108,12 +108,8 @@ tar: iso
 
 .PHONY: clean
 clean:
-	-rm initrd.xz
-	-rm kernel.lz
-	-rm out.tar
-	-rm pcd-${PCD_VERSION}.box
-	-rm output/pcd-${PCD_VERSION}
-	-rm output/pcd-${PCD_VERSION}.iso
+	-rm pcd-*.box
+	-rm output/pcd-*
 
 iso: all
 	@rm -rf iso >&2
