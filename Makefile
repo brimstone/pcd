@@ -111,6 +111,9 @@ clean:
 	-rm initrd.xz
 	-rm kernel.lz
 	-rm out.tar
+	-rm pcd-${PCD_VERSION}.box
+	-rm output/pcd-${PCD_VERSION}
+	-rm output/pcd-${PCD_VERSION}.iso
 
 iso: all
 	@rm -rf iso >&2
