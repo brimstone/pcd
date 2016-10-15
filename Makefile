@@ -27,6 +27,7 @@ docker: docker_image
 		-e PCD_VERSION \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
+	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}
 
 debug: docker_image
 	${DOCKER} run --rm -it \
@@ -42,7 +43,7 @@ endif
 
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
-	KVMSOURCE=-kernel output/primary -append "console=ttyS0 initcall_debug"
+	KVMSOURCE=-kernel output/pcd-${PCD_VERSION} -append "console=ttyS0 initcall_debug"
 endif
 
 LOG ?= >/dev/null 2>/dev/null
@@ -102,7 +103,7 @@ initrd.xz: initrd
 .PHONY: tar
 tar: iso
 	@echo "Extracting output files" >&2
-	@tar -cf - --strip-components=1 pcd-${PCD_VERSION}.iso iso/primary
+	@tar -cf - pcd-${PCD_VERSION}.iso
 	@echo "Export complete" >&2
 
 .PHONY: clean
