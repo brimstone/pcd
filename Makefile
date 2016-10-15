@@ -117,7 +117,6 @@ iso: all
 	@mkdir iso >&2
 	@cp syslinux/syslinux/bios/core/isolinux.bin iso/ >&2
 	@cp syslinux/syslinux/bios/com32/elflink/ldlinux/ldlinux.c32 iso/ >&2
-	@#cp initrd.xz iso/initrd.xz >&2
 	@cp kernel.lz iso/primary >&2
 	@cp installer iso >&2
 	@cd iso; sha256sum primary  installer >sha256sum
@@ -129,8 +128,6 @@ iso: all
 	@echo "default pcd" > iso/isolinux.cfg
 	@echo "label pcd" >> iso/isolinux.cfg
 	@echo "      kernel primary" >> iso/isolinux.cfg
-	@#echo "      initrd initrd.xz" >> iso/isolinux.cfg
-	@#echo "      append" >> iso/isolinux.cfg
 	@genisoimage -o pcd-${PCD_VERSION}.iso \
 		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
 		-J -V pcd iso/ >&2
