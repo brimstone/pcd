@@ -34,7 +34,7 @@ fi
 
 ret=0
 
-echo "Stoppping docker"
+echo "Stopping docker"
 sv stop /service/docker
 
 /bin/sh installer "$TARGET" || ret=$?
