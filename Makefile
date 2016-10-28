@@ -27,7 +27,7 @@ docker: docker_image
 		-e PCD_VERSION \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
-	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}
+	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
 
 debug: docker_image
 	${DOCKER} run --rm -it \
@@ -43,7 +43,7 @@ endif
 
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
-	KVMSOURCE=-kernel output/pcd-${PCD_VERSION} -append "console=ttyS0 initcall_debug"
+	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug"
 endif
 
 LOG ?= >/dev/null 2>/dev/null
