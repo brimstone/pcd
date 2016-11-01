@@ -66,8 +66,6 @@ primary and backup kernel and allow future room for expansion.
 <p>The second partition is used for Docker images, containers, and any shared
 directories. This partition is automatically expanded at boot if needed.
 
-<p>The system uses the runit version in busybox for PID 1.
-
 </section>
 
 <section><h2 id="goals">Goals</h2>
@@ -86,6 +84,26 @@ Only the absolute necessary components are used. There is no
 In fact, the only SSL implementation used is the implementation from Go in
 the Docker Engine itself.
 
+</section>
+
+<section><h2 id="design">Design Decisions</h2>
+<p>The common use case is as a turn-key docker-engine. There's a number of design
+features that are different than traditional GNU/Linux systems that could be
+confusing to people that aren't expecting them.
+
+<h3>No /usr or /sbin</h3>
+
+<p>There's no /usr directory. With the understanding that the /usr directory is for utilities and services that aren't essential to the booting of the system, and the understanding that the system is successful only when it's running the Docker Engine, there's just not a need for /usr anymore. Also, in the same vein, if the system only runs a few services, all as the root user, and humans aren't even suppose to obtain login shells to the system, there's no difference remaining between /sbin and /bin. Therefore, there's no /sbin either.
+
+More here: TODO
+
+<h3>No dynamic binaries</h3>
+
+<p>Dynamic binaries do a great job of only depending on a common interface, an ABI, with the libraries they use. This is great when a system is upgraded over time, a library here, a library there. When the system is meant to be upgraded as a whole, this benefit goes unrealized. When the libraries aren't upgraded separate from the binaries that use them, they just take up extra bloat, with extra functions and features uncalled. Compiling binaries statically only imports the needed functions from libraries, leaving dead code behind.
+
+<h3>Busybox</h3>
+
+<p>In order to stay as light weight as possible, and without the requirement of abstract flexibility, busybox was chosen to fill the role of coreutils, init system, and logging. There's only a few services on the system where busybox isn't used.
 </section>
 
 <section><h2 id="using">Using</h2>
