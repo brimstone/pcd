@@ -14,7 +14,7 @@
       "iso_url": "{{user `iso`}}",
       "iso_checksum_type": "none",
       "boot_command": [
-        "<down><down><down><enter>",
+        "<enter>asdf<enter><down><enter>",
         "pcd-install /dev/sda ",
         "&& ",
         "wget -O - http://{{ .HTTPIP }}:{{ .HTTPPort }}/vagrant.tar | docker load && ",
