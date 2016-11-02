@@ -25,6 +25,7 @@ docker: docker_image
 	@echo "Building with docker"
 	${DOCKER} run --rm -i \
 		-e PCD_VERSION \
+		-e VERBOSE \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
