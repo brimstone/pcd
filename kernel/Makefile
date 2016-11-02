@@ -1,7 +1,7 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.7.7
-GRSEC_VERSION ?= 3.1-4.7.7-201610101902
+KERNEL_VERSION ?= 4.7.10
+GRSEC_VERSION ?= 3.1-4.7.10-201611011946
 LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
@@ -45,23 +45,23 @@ linux/arch/x86_64/boot/bzImage: linux
 	cd linux \
 	&& make -j${JOBS} LOCALVERSION=${LOCAL_VERSION}
 
-linux: ../download/linux.tar.xz ../download/grsec.patch
-	tar xf ../download/linux.tar.xz
+linux: ../download/linux-${KERNEL_VERSION}.tar.xz ../download/grsec-${GRSEC_VERSION}.patch
+	tar xf ../download/linux-${KERNEL_VERSION}.tar.xz
 	mv linux-${KERNEL_VERSION} linux
 	cp kernel.config linux/.config
-	patch -d linux -p1 < ../download/grsec.patch
+	patch -d linux -p1 < ../download/grsec-${GRSEC_VERSION}.patch
 
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${KERNEL_VERSION}.tar.xz, \
-../download/linux.tar.xz, \
-ed840d5253de3738e5456e85e919f8dd4cab895d2bc1d0fbafbe0215d2de2f1d))
+../download/linux-${KERNEL_VERSION}.tar.xz, \
+92459ba55210522ac96408c0049ca2a9a3147e7a690c70fb4b536526412b59dc)) #kernel
 
 $(eval $(call cache,\
 https://grsecurity.net/test/grsecurity-${GRSEC_VERSION}.patch,\
-../download/grsec.patch, \
-a44bbf5765de6865b36dd5a22cb3bfaff88da87c4e8f4af14b700d207b7ea8a3))
+../download/grsec-${GRSEC_VERSION}.patch, \
+14430c58f81e5edca07d544e11354a6b7f8f50db7d51f73ba350937c00086a5b)) #grsec
 
 clean:
-	-rm linux.tar.xz
+	-rm linux-${KERNEL_VERSION}.tar.xz
 	-rm -rf linux
-	-rm grsec.patch
+	-rm grsec-${GRSEC_VERSION}.patch
