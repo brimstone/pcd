@@ -12,7 +12,7 @@ LIBGCRYPT_VERSION := 1.7.2
 LIBASSUAN_VERSION := 2.4.3
 LIBKSBA_VERSION := 1.3.4
 NPTH_VERSION := 1.2
-ZLIB_VERSION := 1.2.8
+ZLIB_VERSION := 1.2.10
 
 gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 	tar xf ../download/gpg.tar.bz2
@@ -138,8 +138,7 @@ zlib: ../download/zlib.tar.gz
 		DESTDIR="${PWD}/support" \
 		install
 
-
 $(eval $(call cache, \
 http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz, \
 ../download/zlib.tar.gz, \
-36658cb768a54c1d4dec43c3116c27ed893e88b02ecfcb44f2166f9c0b7f2a0d))
+8d7e9f698ce48787b6e1c67e6bff79e487303e66077e25cb9784ac8835978017)) #zlib
