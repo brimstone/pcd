@@ -2,6 +2,11 @@ PWD = $(shell pwd)
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
 
+LOG ?= >/dev/null 2>/dev/null
+ifdef VERBOSE
+LOG = >&2
+endif
+
 ifneq ($(CACHE),)
 cachedir := -v /tmp/pcd/download:/buildroot/download
 endif
@@ -19,7 +24,7 @@ ifneq (${DOCKER},)
 .DEFAULT_GOAL := docker
 .PHONY: docker_image docker
 docker_image:
-	${DOCKER} build -t pcd:${PCD_VERSION} . >&2
+	${DOCKER} build -t pcd:${PCD_VERSION} . ${LOG}
 
 docker: docker_image
 	@echo "Building with docker"
@@ -45,11 +50,6 @@ endif
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
 	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug"
-endif
-
-LOG ?= >/dev/null 2>/dev/null
-ifdef VERBOSE
-LOG = >&2
 endif
 
 .PHONY: all
