@@ -1,6 +1,10 @@
 PWD = $(shell pwd)
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
+KBUILD_BUILD_USER ?= brimstone
+export KBUILD_BUILD_USER
+KBUILD_BUILD_HOST ?= the.narro.ws
+export KBUILD_BUILD_HOST
 
 LOG ?= >/dev/null 2>/dev/null
 ifdef VERBOSE
@@ -30,6 +34,8 @@ docker: docker_image
 	@echo "Building with docker"
 	${DOCKER} run --rm -i \
 		-e PCD_VERSION \
+		-e KBUILD_BUILD_USER \
+		-e KBUILD_BUILD_HOST \
 		-e VERBOSE \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
