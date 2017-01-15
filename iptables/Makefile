@@ -15,6 +15,7 @@ iptables: libnftnl ../download/iptables.tar.bz2
 	mv iptables-${IPTABLES_VERSION} iptables
 	cd iptables \
 	&& ./configure \
+		CFLAGS="-I${PWD}/../kernel/out/include" \
 		--prefix=${PWD}/out \
 		--enable-static \
 		--disable-shared \
