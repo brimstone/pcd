@@ -1,7 +1,7 @@
 include ../util.mk
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 PWD = $(shell pwd)
-CC = ${PWD}/../include/bin/musl-gcc
+CC = ${PWD}/../include/bin/musl-gcc -static
 CC += -I${PWD}/../kernel/out/include
 export CC
 CFLAGS = -I${PWD}/build/include
@@ -54,6 +54,7 @@ popt: ../download/popt.tar.gz
 	cd popt \
 	&& ./configure \
 		--prefix=/ \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' Makefile \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/build" \
 		install
