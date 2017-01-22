@@ -1,18 +1,16 @@
 include ../util.mk
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 PWD = $(shell pwd)
-CC = ${PWD}/../include/bin/musl-gcc
+CC = ${PWD}/../include/bin/musl-gcc -static
 export CC
-CFLAGS = -static
-export CFLAGS
 
-GPG_VERSION := 2.1.14
-LIBGPGERROR_VERSION := 1.24
-LIBGCRYPT_VERSION := 1.7.2
+GPG_VERSION := 2.1.17
+LIBGPGERROR_VERSION := 1.26
+LIBGCRYPT_VERSION := 1.7.5
 LIBASSUAN_VERSION := 2.4.3
-LIBKSBA_VERSION := 1.3.4
-NPTH_VERSION := 1.2
-ZLIB_VERSION := 1.2.10
+LIBKSBA_VERSION := 1.3.5
+NPTH_VERSION := 1.3
+ZLIB_VERSION := 1.2.11
 
 gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 	tar xf ../download/gpg.tar.bz2
@@ -26,7 +24,7 @@ gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 		--with-ksba-prefix="${PWD}/support" \
 		--with-npth-prefix="${PWD}/support" \
 		--with-zlib="${PWD}/support" \
-		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
+		CFLAGS="-I${PWD}/support/include -L${PWD}/support/lib" \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out" \
 		install
@@ -43,7 +41,7 @@ gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/gnupg/gnupg-${GPG_VERSION}.tar.bz2, \
 ../download/gpg.tar.bz2, \
-9450dee9693b6a12bf0c374dae77b66c30f69ff8f35fc9266ab8dd76998eba42))
+c5dc54db432209fa8f9bdb071c8fb60a765ff28e363150e30bdd4543160243cb)) #gpg
 
 libgpg-error: ../download/libgpg-error.tar.bz2
 	tar xf ../download/libgpg-error.tar.bz2
@@ -51,14 +49,17 @@ libgpg-error: ../download/libgpg-error.tar.bz2
 	cd libgpg-error \
 	&& ./configure \
 		--prefix=/ \
+		--enable-static \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' src/Makefile tests/Makefile \
 	&& make -j${JOBS} \
+		CFLAGS="-static" \
 		DESTDIR="${PWD}/support" \
 		install
 
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-${LIBGPGERROR_VERSION}.tar.bz2, \
 ../download/libgpg-error.tar.bz2, \
-9268e1cc487de5e6e4460fca612a06e4f383072ac43ae90603e5e46783d3e540))
+4c4bcbc90116932e3acd37b37812d8653b1b189c1904985898e860af818aee69)) #libgpg-error
 
 libgcrypt: ../download/libgcrypt.tar.bz2
 	tar xf ../download/libgcrypt.tar.bz2
@@ -67,15 +68,18 @@ libgcrypt: ../download/libgcrypt.tar.bz2
 	&& ./configure \
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
-		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
+		CFLAGS="-I${PWD}/support/include -L${PWD}/support/lib" \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' mpi/Makefile src/Makefile tests/Makefile \
+	&& sed -i 's/$$(AM_V_lt) $$(AM_LIBTOOLFLAGS)/$$(AM_V_lt) --tag=CC $$(AM_LIBTOOLFLAGS)/' mpi/Makefile cipher/Makefile \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
+		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
 		install
 
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-${LIBGCRYPT_VERSION}.tar.bz2, \
 ../download/libgcrypt.tar.bz2, \
-3d35df906d6eab354504c05d749a9b021944cb29ff5f65c8ef9c3dd5f7b6689f))
+d1fea4128beef2bb30a470af6bafabccc503ced350534fb9dd8f5a53ffbae800)) #libgcrypt
 
 libassuan: ../download/libassuan.tar.bz2
 	tar xf ../download/libassuan.tar.bz2
@@ -84,7 +88,8 @@ libassuan: ../download/libassuan.tar.bz2
 	&& ./configure \
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
-		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
+		CFLAGS="-I${PWD}/support/include -L${PWD}/support/lib" \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' tests/Makefile \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
@@ -92,7 +97,7 @@ libassuan: ../download/libassuan.tar.bz2
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/libassuan/libassuan-${LIBASSUAN_VERSION}.tar.bz2, \
 ../download/libassuan.tar.bz2, \
-22843a3bdb256f59be49842abf24da76700354293a066d82ade8134bb5aa2b71))
+22843a3bdb256f59be49842abf24da76700354293a066d82ade8134bb5aa2b71)) #libassuan
 
 libksba: ../download/libksba.tar.bz2
 	tar xf ../download/libksba.tar.bz2
@@ -101,15 +106,17 @@ libksba: ../download/libksba.tar.bz2
 	&& ./configure \
 		--prefix=/ \
 		--with-libgpg-error-prefix="${PWD}/support" \
-		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
+		CFLAGS="-I${PWD}/support/include -L${PWD}/support/lib" \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' src/Makefile tests/Makefile \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
+		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
 		install
 
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/libksba/libksba-${LIBKSBA_VERSION}.tar.bz2, \
 ../download/libksba.tar.bz2, \
-f6c2883cebec5608692d8730843d87f237c0964d923bbe7aa89c05f20558ad4f))
+41444fd7a6ff73a79ad9728f985e71c9ba8cd3e5e53358e70d5f066d35c1a340)) #libksba
 
 npth: ../download/npth.tar.bz2
 	tar xf ../download/npth.tar.bz2
@@ -117,7 +124,8 @@ npth: ../download/npth.tar.bz2
 	cd npth \
 	&& ./configure \
 		--prefix=/ \
-		CFLAGS="-static -I${PWD}/support/include -L${PWD}/support/lib" \
+		CFLAGS="-I${PWD}/support/include -L${PWD}/support/lib" \
+	&& sed -i 's/mode=link $$(CCLD)/mode=link "$$(CCLD)"/' tests/Makefile \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/support" \
 		install
@@ -125,7 +133,7 @@ npth: ../download/npth.tar.bz2
 $(eval $(call cache, \
 https://gnupg.org/ftp/gcrypt/npth/npth-${NPTH_VERSION}.tar.bz2, \
 ../download/npth.tar.bz2, \
-6ddbdddb2cf49a4723f9d1ad6563c480d6760dcb63cb7726b8fc3bc2e1b6c08a))
+bca81940436aed0734eb8d0ff8b179e04cc8c087f5625204419f5f45d736a82a)) #npth
 
 
 zlib: ../download/zlib.tar.gz
@@ -141,4 +149,4 @@ zlib: ../download/zlib.tar.gz
 $(eval $(call cache, \
 http://zlib.net/zlib-${ZLIB_VERSION}.tar.gz, \
 ../download/zlib.tar.gz, \
-8d7e9f698ce48787b6e1c67e6bff79e487303e66077e25cb9784ac8835978017)) #zlib
+c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1)) #zlib

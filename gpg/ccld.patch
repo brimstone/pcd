@@ -1,0 +1,11 @@
+--- libgpg-error/src/Makefile	2017-01-22 15:10:38.028160968 +0000
++++ Makefile.new	2017-01-22 15:09:27.169289896 +0000
+@@ -239,7 +239,7 @@
+ am__v_CC_1 = 
+ CCLD = $(CC)
+ LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
++	$(LIBTOOLFLAGS) --mode=link "$(CCLD)" $(AM_CFLAGS) $(CFLAGS) \
+ 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+ AM_V_CCLD = $(am__v_CCLD_$(V))
+ am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
