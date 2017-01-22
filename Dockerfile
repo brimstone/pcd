@@ -7,4 +7,4 @@ RUN package build-essential libncurses-dev wget python unzip rsync \
     netcat-traditional kmod bison flex nasm upx \
  && locale-gen en_US.UTF-8
 
-ADD . /buildroot/
+COPY . /buildroot/
