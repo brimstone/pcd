@@ -8,7 +8,7 @@ export CFLAGS
 EXTRA_LDFLAGS = -static -L ${PWD}/build/lib
 export EXTRA_LDFLAGS
 
-DIALOG_VERSION := 1.3-20160424
+DIALOG_VERSION := 1.3-20160828
 NCURSES_VERSION := 6.0
 
 all: directories dialog
@@ -19,8 +19,8 @@ all: directories dialog
 	cp ${PWD}/build/share/terminfo/l/linux ${PWD}/root/share/terminfo/l/
 	tar cf ${PWD}/out.tar -C ${PWD}/root .
 
-dialog: ncurses ../download/dialog.tar.gz
-	tar xf ../download/dialog.tar.gz
+dialog: ncurses ../download/dialog-${DIALOG_VERSION}.tar.gz
+	tar xf ../download/dialog-${DIALOG_VERSION}.tar.gz
 	mv dialog-${DIALOG_VERSION} dialog
 	cd dialog \
 	&& ./configure --with-ncursesw --includedir="${PWD}/build/include" \
@@ -33,8 +33,8 @@ directories:
 
 $(eval $(call cache,\
 ftp://invisible-island.net/dialog/dialog-${DIALOG_VERSION}.tgz, \
-../download/dialog.tar.gz, \
-47f5870876e778aa2902f2e91b4070418d4651b647e1a67a94127cb8aab5b5eb))
+../download/dialog-${DIALOG_VERSION}.tar.gz, \
+453095abaec288bfbc1ca9faced917e17742cff1ea45ec46210071ac153562f9)) #dialog
 
 ncurses: ../download/ncurses.tar.gz
 	tar xf ../download/ncurses.tar.gz
@@ -46,4 +46,4 @@ ncurses: ../download/ncurses.tar.gz
 $(eval $(call cache,\
 ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz, \
 ../download/ncurses.tar.gz, \
-f551c24b30ce8bfb6e96d9f59b42fbea30fa3a6123384172f9e7284bcf647260))
+f551c24b30ce8bfb6e96d9f59b42fbea30fa3a6123384172f9e7284bcf647260)) #ncurses
