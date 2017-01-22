@@ -42,7 +42,7 @@ docker: docker_image
 		pcd:${PCD_VERSION} make tar | tar -xC output
 	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
 
-debug: docker_image
+shell: docker_image
 	${DOCKER} run --rm -it \
 		-e PCD_VERSION \
 		$(cachedir) \
@@ -171,3 +171,20 @@ reload-box:
 vagrant-service:
 	docker build -t vagrant vagrant-service
 	docker save vagrant > packer/http/vagrant.tar
+
+ifneq ($(shell which docker),)
+debug: docker_image
+	docker run --rm -it \
+		-e PCD_VERSION \
+		-e KBUILD_BUILD_USER \
+		-e KBUILD_BUILD_HOST \
+		-e VERBOSE \
+		$(cachedir) \
+		pcd:${PCD_VERSION} \
+		/bin/bash -c 'make debug; /bin/bash'
+else
+debug:
+	# uncommenit these to debug components
+	#make kernel libc
+	#make -C iptables
+endif
