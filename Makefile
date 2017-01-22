@@ -8,6 +8,7 @@ export KBUILD_BUILD_HOST
 
 LOG ?= >/dev/null 2>/dev/null
 ifdef VERBOSE
+export VERBOSE
 LOG = >&2
 endif
 
