@@ -42,7 +42,7 @@ ncurses: ../download/ncurses.tar.gz
 	cd ncurses \
 	&& CPPFLAGS="-P" ./configure --prefix=/ --without-cxx --enable-widec \
 	&& make -j${JOBS} DESTDIR="${PWD}/build" install
-	
+
 $(eval $(call cache,\
 ftp://ftp.gnu.org/pub/gnu/ncurses/ncurses-${NCURSES_VERSION}.tar.gz, \
 ../download/ncurses.tar.gz, \
