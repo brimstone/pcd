@@ -25,29 +25,10 @@ ifdef DEBUG
 	PACKERDEBUG=-var 'boot_debug=docker exec -it ssh /bin/sh<enter><wait10><wait10><wait10><wait10>touch /tmp/ssh.log; tail -f /tmp/ssh.log&'
 endif
 
-ifneq (${DOCKER},)
-.DEFAULT_GOAL := docker
-.PHONY: docker_image docker
-docker_image:
-	${DOCKER} build -t pcd:${PCD_VERSION} . ${LOG}
+.DEFAULT_GOAL := all
 
-docker: docker_image
-	@echo "Building with docker"
-	${DOCKER} run --rm -i \
-		-e PCD_VERSION \
-		-e KBUILD_BUILD_USER \
-		-e KBUILD_BUILD_HOST \
-		-e VERBOSE \
-		$(cachedir) \
-		pcd:${PCD_VERSION} make tar | tar -xC output
-	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
-
-shell: docker_image
-	${DOCKER} run --rm -it \
-		-e PCD_VERSION \
-		$(cachedir) \
-		pcd:${PCD_VERSION}
-endif
+.PHONY: all
+all: output/pcd-${PCD_VERSION}.box
 
 KVMSERIAL=-nographic
 ifdef GUI
@@ -58,9 +39,6 @@ KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
 	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug"
 endif
-
-.PHONY: all
-all: kernel.lz
 
 .PHONY: kernel
 kernel:
@@ -100,18 +78,10 @@ out: components
 	done
 	@cat out/etc/ssl/certs/* > out/etc/ssl/certs/ca-certificates.crt
 
-initrd: out
-	@echo "$$(date) Building initrd" >&2
-	@cd out && find . | cpio --create --format='newc' > ../initrd
-
-initrd.xz: initrd
-	@echo "$$(date) Compressing initrd" >&2
-	@xz --check=crc32 -9 --keep initrd >&2
-
 .PHONY: tar
-tar: iso
+tar: output/pcd-${PCD_VERSION}.iso
 	@echo "Extracting output files" >&2
-	@tar -cf - pcd-${PCD_VERSION}.iso
+	@tar -cf - -C output pcd-${PCD_VERSION}.iso
 	@echo "Export complete" >&2
 
 .PHONY: clean
@@ -119,7 +89,33 @@ clean:
 	-rm pcd-*.box
 	-rm output/pcd-*
 
-iso: all
+iso: output/pcd-${PCD_VERSION}.iso
+
+ifneq (${DOCKER},)
+output/pcd-${PCD_VERSION}.iso: docker
+
+.PHONY: docker_image docker
+docker_image:
+	@${DOCKER} build -t pcd:${PCD_VERSION} . ${LOG}
+
+docker: docker_image
+	@echo "Building with docker"
+	@${DOCKER} run --rm -i \
+		-e PCD_VERSION \
+		-e KBUILD_BUILD_USER \
+		-e KBUILD_BUILD_HOST \
+		-e VERBOSE \
+		$(cachedir) \
+		pcd:${PCD_VERSION} make tar | tar -xC output
+	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
+
+shell: docker_image
+	${DOCKER} run --rm -it \
+		-e PCD_VERSION \
+		$(cachedir) \
+		pcd:${PCD_VERSION}
+else
+output/pcd-${PCD_VERSION}.iso: kernel.lz
 	@rm -rf iso >&2
 	@mkdir iso >&2
 	@cp syslinux/syslinux/bios/core/isolinux.bin iso/ >&2
@@ -135,9 +131,11 @@ iso: all
 	@echo "default pcd" > iso/isolinux.cfg
 	@echo "label pcd" >> iso/isolinux.cfg
 	@echo "      kernel primary" >> iso/isolinux.cfg
-	@genisoimage -o pcd-${PCD_VERSION}.iso \
+	@mkdir output
+	@genisoimage -o output/pcd-${PCD_VERSION}.iso \
 		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
 		-J -V pcd iso/ >&2
+endif
 
 kvm: pcd.qcow2
 	kvm -m 1024 \
@@ -153,9 +151,9 @@ pcd.qcow2:
 	qemu-img create -f qcow2 pcd.qcow2 20G
 
 .PHONY: pcd.box
-pcd.box: pcd-${PCD_VERSION}.box
+pcd.box: output/pcd-${PCD_VERSION}.box
 
-pcd-${PCD_VERSION}.box:
+output/pcd-${PCD_VERSION}.box: output/pcd-${PCD_VERSION}.iso
 	cd packer \
 	; ~/local/go/src/github.com/mitchellh/packer/bin/packer build \
 	${PACKERDEBUG} \
