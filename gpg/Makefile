@@ -30,6 +30,7 @@ gpg: zlib libgpg-error libgcrypt libassuan libksba npth ../download/gpg.tar.bz2
 		install
 	strip out/bin/gpg2
 	mkdir -p root/bin root/share/gnupg root/root/.gnupg
+	chmod 700 root/root/.gnupg
 	mv out/bin/gpg2 root/bin/gpg2
 	mv out/share/gnupg/gpg-conf.skel root/share/gnupg/
 	mv out/share/gnupg/dirmngr-conf.skel root/share/gnupg/
