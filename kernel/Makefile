@@ -1,7 +1,6 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.9.13
-GRSEC_VERSION ?= 3.1-4.9.13-201702270729
+KERNEL_VERSION ?= 4.11.1
 LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
@@ -26,8 +25,8 @@ ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 			usb_common usbcore usbhid veth xhci_hcd xhci_pci xt_addrtype \
 			xt_conntrack \
 			binfmt_misc; do \
-			if [ -z "$$(grep "/$$f.ko" out/lib/modules/${KERNEL_VERSION}-grsec${LOCAL_VERSION}/modules.*)" ] \
-			&& [ -z "$$(grep "$(echo "/$$f.ko" | tr '-_' '_-')" out/lib/modules/${KERNEL_VERSION}-grsec${LOCAL_VERSION}/modules.*)" ] \
+			if [ -z "$$(grep "/$$f.ko" out/lib/modules/${KERNEL_VERSION}${LOCAL_VERSION}/modules.*)" ] \
+			&& [ -z "$$(grep "$(echo "/$$f.ko" | tr '-_' '_-')" out/lib/modules/${KERNEL_VERSION}${LOCAL_VERSION}/modules.*)" ] \
 				; then \
 				modules="$$modules $$f"; \
 		fi; \
@@ -36,7 +35,7 @@ ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 		echo "Can't find:$$modules"; \
 		exit 1; \
 	fi
-	depmod -b ${INSTALL_PATH} ${KERNEL_VERSION}-grsec${LOCAL_VERSION}
+	depmod -b ${INSTALL_PATH} ${KERNEL_VERSION}${LOCAL_VERSION}
 	cp linux/System.map ${INSTALL_PATH}
 	tar -C ${INSTALL_PATH} -cf out.tar lib System.map
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
@@ -45,23 +44,16 @@ linux/arch/x86_64/boot/bzImage: linux
 	cd linux \
 	&& make -j${JOBS} LOCALVERSION=${LOCAL_VERSION}
 
-linux: ../download/linux-${KERNEL_VERSION}.tar.xz ../download/grsec-${GRSEC_VERSION}.patch
+linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 	tar xf ../download/linux-${KERNEL_VERSION}.tar.xz
-	mv linux-${KERNEL_VERSION} linux
+	mv linux-$(subst .0,,${KERNEL_VERSION}) linux
 	cp kernel.config linux/.config
-	patch -d linux -p1 < ../download/grsec-${GRSEC_VERSION}.patch
 
 $(eval $(call cache,\
-https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-${KERNEL_VERSION}.tar.xz, \
+https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-36464aec4fb32ed192252645819abb55ceb21eef17b3f7210b4a673e7486a268)) #kernel
-
-$(eval $(call cache,\
-https://grsecurity.net/test/grsecurity-${GRSEC_VERSION}.patch,\
-../download/grsec-${GRSEC_VERSION}.patch, \
-39bfbe21a7fdaa0af1e92ba46e637017b593cdebe3d15aab6a3e1e473adc4113)) #grsec
+7e46f9e216907942b0b07f2bb59708dc33501d4e2a0938164396386ebd21e608)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
 	-rm -rf linux
-	-rm grsec-${GRSEC_VERSION}.patch

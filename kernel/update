@@ -1,8 +1,5 @@
 #!/bin/bash
-grsec="$(wget https://grsecurity.net/download.php -O - -q | grep /test/ | sed 's/.patch".*$//;s/^.*grsecurity-//')"
-sed -i "s/GRSEC_VERSION ?= .*$/GRSEC_VERSION ?= $grsec/" Makefile
 
-kernel="${grsec#*-}"
-kernel="${kernel%-*}"
+kernel="$(curl -s https://www.kernel.org/ | grep -oE 'http[^ ]*tar.xz' | uniq -d | sed 's/^.*linux-//;s/.tar.xz//')"
 
 sed -i "s/KERNEL_VERSION ?= .*$/KERNEL_VERSION ?= $kernel/" Makefile
