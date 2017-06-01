@@ -1,4 +1,6 @@
 #!/bin/sh
 set -eu
-/sbin/ifconfig eth0 up 2>/dev/null
-exec /sbin/udhcpc -f -i eth0 2>/dev/null
+
+exec 2>&1
+/sbin/ifconfig eth0 up
+exec /sbin/udhcpc -f -i eth0

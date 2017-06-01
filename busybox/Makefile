@@ -10,7 +10,8 @@ all: busybox
 	cd busybox; make TARGET_ARCH="x86_64" HOSTCC="${CC} -static" CC="${CC} -static" V=1 install
 	cp init busybox/_install
 	rm busybox/_install/linuxrc
-	cp busybox/examples/udhcp/simple.script busybox/_install/bin/udhcpc.script
+	cp udhcpc.script busybox/_install/bin/udhcpc.script
+	chmod 755 busybox/_install/bin/udhcpc.script
 	tar -C busybox/_install -cf out.tar .
 
 busybox: ../download/busybox.tar.bz2
