@@ -4,9 +4,7 @@ sv status /service/syslog | grep -q '^run' || exit
 
 [ -e /etc/resolv.conf ] || exit
 
-BIP=""
-. /etc/config/docker
-[ -z "$BIP" ] && BIP="172.17.0.1/24"
+[ -e /etc/docker/daemon.json ] || exit
 
 exec 2>&1
 
@@ -21,7 +19,4 @@ exec 2>&1
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 export DOCKER_RAMDISK=true
 
-exec docker daemon -s=overlay \
-	-H=unix:///var/run/docker.sock \
-	-H=tcp://0.0.0.0:2375 \
-	--bip="$BIP"
+exec dockerd
