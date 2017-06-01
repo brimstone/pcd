@@ -41,7 +41,7 @@ endif
 
 KVMSOURCE=-cdrom output/pcd-${PCD_VERSION}.iso -boot d
 ifdef KERNEL
-	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug"
+	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug url=http://10.0.2.2:8000/config.yaml"
 endif
 
 .PHONY: kernel

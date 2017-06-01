@@ -1,0 +1,1 @@
+{"hostname":"pandas","command":"until docker run --name nginx -d nginx; do\n  sleep 2;\ndone\n"}
