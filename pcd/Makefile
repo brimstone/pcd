@@ -8,7 +8,8 @@ all:
 	[ -e pcd ] \
 	|| ( go get -d -v -u github.com/brimstone/go-pcd \
 	&& cd ${GOPATH}/src/github.com/brimstone/go-pcd \
-	&& make )
+	&& make \
+	&& mv pcd ${PWD} )
 	mv pcd ${PWD}/root/bin
 	tar -cf out.tar -C root .
 
