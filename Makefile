@@ -13,7 +13,11 @@ LOG = >&2
 endif
 
 ifneq ($(CACHE),)
+PATH := /usr/lib/ccache:${PATH}
+export PATH
 cachedir := -v /tmp/pcd/download:/buildroot/download
+CCACHE_DIR := /buildroot/download/ccache
+export CCACHE_DIR
 endif
 
 ifneq ($(shell which docker),)
@@ -105,6 +109,7 @@ docker: docker_image
 		-e KBUILD_BUILD_USER \
 		-e KBUILD_BUILD_HOST \
 		-e VERBOSE \
+		-e CACHE \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
