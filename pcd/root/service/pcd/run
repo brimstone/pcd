@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sv status /service/eth0 | grep -q '^run' || exit
+
 exec 2>&1
 
 exec /bin/pcd daemon
