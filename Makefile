@@ -146,7 +146,6 @@ kvm: pcd.qcow2
 	kvm -m 1024 \
 	${KVMSERIAL} \
 	${KVMSOURCE} \
-	-no-kvm \
 	-usb \
 	-device usb-ehci \
 	-device usb-kbd \
