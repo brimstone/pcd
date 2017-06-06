@@ -14,7 +14,9 @@ E2FSPROGS_VERSION = 1.43.1
 all: mkfs.ext4
 	mkdir -p ${PWD}/root/sbin
 	cp ${PWD}/out/sbin/mkfs.ext4 ${PWD}/root/sbin
-	strip ${PWD}/root/sbin/mkfs.ext4
+	cp ${PWD}/out/sbin/resize2fs ${PWD}/root/sbin
+	cp ${PWD}/out/sbin/e2fsck.static ${PWD}/root/sbin/e2fsck
+	strip ${PWD}/root/sbin/*
 	tar cf ${PWD}/out.tar -C ${PWD}/root .
 
 mkfs.ext4: ../download/e2fsprogs.tar.gz
@@ -22,7 +24,10 @@ mkfs.ext4: ../download/e2fsprogs.tar.gz
 	mv e2fsprogs-${E2FSPROGS_VERSION} e2fsprogs
 	cd e2fsprogs \
 	&& ./configure --prefix=/ \
-	&& make -j${JOBS} install DESTDIR=${PWD}/out
+	&& make -j${JOBS} install DESTDIR=${PWD}/out \
+	&& cd e2fsck \
+	&& make e2fsck.static \
+	&& cp e2fsck.static ${PWD}/out/sbin
 
 $(eval $(call cache,\
 https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz/download, \
