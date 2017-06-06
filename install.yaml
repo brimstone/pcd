@@ -1,0 +1,7 @@
+command: >
+  export HOME=/root;
+  until sv status /service/docker | grep -q run; do
+    echo "Waiting";
+    sleep 2;
+  done;
+  pcd-install /dev/sda && poweroff
