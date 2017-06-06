@@ -29,6 +29,17 @@ find /sys -name modalias -exec cat \{\} \; \
 
 # make and mount /data
 [ -d /data ] || mkdir /data
+# TODO make this better
+if mount LABEL=DATA /data; then
+	device=$(mount | awk '/\/data/ {print $1}')
+	umount /data
+	drive="${device%%[0-9]}"
+	partnum="${device##${drive}}"
+	sgdisk -d "${partnum}" "${drive}"
+	sgdisk -N "${partnum}" -c "${partnum}":"Linux Data" -t "${partnum}":8e00 "${drive}"
+	e2fsck -f "${device}"
+	resize2fs "${device}"
+fi
 mount LABEL=DATA /data || true
 
 # bring up loopback interface
