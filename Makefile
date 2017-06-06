@@ -32,7 +32,7 @@ endif
 .DEFAULT_GOAL := all
 
 .PHONY: all
-all: output/pcd-${PCD_VERSION}.box
+all: box gce
 
 KVMSERIAL=-nographic
 ifdef GUI
@@ -96,7 +96,8 @@ clean:
 iso: output/pcd-${PCD_VERSION}.iso
 
 ifneq (${DOCKER},)
-output/pcd-${PCD_VERSION}.iso: docker
+output/pcd-${PCD_VERSION}.iso:
+	$(MAKE) docker
 
 .PHONY: docker_image docker
 docker_image:
@@ -154,8 +155,8 @@ kvm: pcd.qcow2
 pcd.qcow2:
 	qemu-img create -f qcow2 pcd.qcow2 20G
 
-.PHONY: pcd.box
-pcd.box: output/pcd-${PCD_VERSION}.box
+.PHONY: box
+box: output/pcd-${PCD_VERSION}.box
 
 output/pcd-${PCD_VERSION}.box: output/pcd-${PCD_VERSION}.iso
 	cd packer \
@@ -190,3 +191,22 @@ debug:
 	#make kernel libc
 	#make -C iptables
 endif
+
+.PHONY: img
+img: output/pcd-${PCD_VERSION}.img
+output/pcd-${PCD_VERSION}.img: output/pcd-${PCD_VERSION}.iso output/pcd-${PCD_VERSION}.vmlinuz
+	dd if=/dev/zero of=$@ bs=4M count=256 conv=sparse
+	python -m SimpleHTTPServer & \
+	spid=$$! \
+    && kvm -m 512 -cdrom output/pcd-${PCD_VERSION}.iso \
+		-kernel output/pcd-${PCD_VERSION}.vmlinuz \
+		-append 'url=http://10.0.2.2:8000/install.yaml' \
+	$@ \
+	&& kill $$spid
+
+.PHONY: tar
+gce: output/pcd-${PCD_VERSION}.gce.tar.gz
+output/pcd-${PCD_VERSION}.gce.tar.gz: output/pcd-${PCD_VERSION}.img
+	cp $< output/disk.raw
+	tar -Sczvf $@ -C output disk.raw
+	rm output/disk.raw
