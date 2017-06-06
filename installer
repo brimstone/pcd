@@ -15,18 +15,19 @@ partition_disk(){
 	sgdisk -og "$1" \
 	 -n 1:2048:411647 -c 1:"EFI System Partition" -t 1:ef00 \
 	 -n 2:411647:823295 -c 2:"Linux /boot" -t 2:8300 \
+	--attributes=2:set:2 \
 	 -n 3 -c 3:"Linux Data" -t 3:8e00 \
-	--attributes=2:set:2 "$1" 
+	"$1"
 	sgdisk -p "$1"
 	format_boot "$1"
-	format_date "$1"
+	format_data "$1"
 }
 
 grow_disk(){
 	sgdisk -e "$1"
 }
 
-format_date(){
+format_data(){
 	mkfs.ext4 -L DATA "$1"3
 }
 
