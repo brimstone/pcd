@@ -1,6 +1,6 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.11.1
+KERNEL_VERSION ?= 4.12.2
 LOCAL_VERSION ?= -${PCD_VERSION}
 
 PWD = $(shell pwd)
@@ -52,7 +52,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-7e46f9e216907942b0b07f2bb59708dc33501d4e2a0938164396386ebd21e608)) #kernel
+0a7a852eba28293e6d9bc9e09d4541d8f6ffe46f7ac632c54a7d85b597f185e2)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
