@@ -1,6 +1,5 @@
 include ../util.mk
-DOCKER_VERSION := 17.05.0-ce
-DOCKER_CHANNEL := get
+DOCKER_VERSION := 17.06.0-ce
 
 all: ../download/docker.tar.gz
 	tar xf ../download/docker.tar.gz
@@ -9,6 +8,6 @@ all: ../download/docker.tar.gz
 	tar -cf out.tar -C root .
 
 $(eval $(call cache,\
-https://${DOCKER_CHANNEL}.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz, \
+https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz, \
 ../download/docker.tar.gz, \
-340e0b5a009ba70e1b644136b94d13824db0aeb52e09071410f35a95d94316d9))
+e582486c9db0f4229deba9f8517145f8af6c5fae7a1243e6b07876bd3e706620))
