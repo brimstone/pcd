@@ -2,16 +2,22 @@ PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
 KERNEL_VERSION ?= 4.12.2
 LOCAL_VERSION ?= -${PCD_VERSION}
+ARCH ?= amd64
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
 export INSTALL_PATH = ${PWD}/out
 export INSTALL_MOD_PATH = ${PWD}/out
+export CONFIG_INITRAMFS_SOURCE = ${PWD}/../out
 
 include ../util.mk
 
-${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
-	mkdir ${INSTALL_PATH}
+ifeq (${ARCH},um)
+${INSTALL_PATH}: linux/linux
+	cp linux/linux kernel.gz
+else
+${INSTALL_PATH}: linux/linux
+	mkdir -p ${INSTALL_PATH}
 	cd linux \
 	&& make install \
 		modules_install \
@@ -39,15 +45,17 @@ ${INSTALL_PATH}: linux/arch/x86_64/boot/bzImage
 	cp linux/System.map ${INSTALL_PATH}
 	tar -C ${INSTALL_PATH} -cf out.tar lib System.map
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
+endif
 
-linux/arch/x86_64/boot/bzImage: linux
+linux/linux: linux
 	cd linux \
 	&& make -j${JOBS} LOCALVERSION=${LOCAL_VERSION}
+	[ -e linux/arch/x86_64/boot/bzImage ] && mv linux/arch/x86_64/boot/bzImage linux/linux || true
 
 linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 	tar xf ../download/linux-${KERNEL_VERSION}.tar.xz
 	mv linux-$(subst .0,,${KERNEL_VERSION}) linux
-	cp kernel.config linux/.config
+	cp ${ARCH}.config linux/.config
 
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \

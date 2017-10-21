@@ -49,10 +49,17 @@ kernel:
 	@echo "$$(date) Building kernel" >&2
 	@cd kernel && make </dev/null ${LOG}
 
+ifeq (${ARCH},um)
 kernel.lz: kernel out
 	@cd kernel/linux \
 	&& make CONFIG_INITRAMFS_SOURCE=${PWD}/out LOCALVERSION=-${PCD_VERSION} ${LOG} \
-	&& cp arch/x86/boot/bzImage ../../kernel.lz >&2
+	&& ls -l kernel ${LOG}
+else
+kernel.lz: kernel out
+	@cd kernel/linux \
+	&& make CONFIG_INITRAMFS_SOURCE=${PWD}/out LOCALVERSION=-${PCD_VERSION} ${LOG} \
+	&& cp arch/x86/boot/bzImage ../../kernel.lz ${LOG}
+endif
 
 .PHONY: libc
 libc:
@@ -111,6 +118,7 @@ docker: docker_image
 		-e KBUILD_BUILD_HOST \
 		-e VERBOSE \
 		-e CACHE \
+		-e ARCH \
 		$(cachedir) \
 		pcd:${PCD_VERSION} make tar | tar -xC output
 	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
