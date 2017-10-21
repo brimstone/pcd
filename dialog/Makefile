@@ -32,7 +32,7 @@ directories:
 
 
 $(eval $(call cache,\
-ftp://invisible-island.net/dialog/dialog-${DIALOG_VERSION}.tgz, \
+http://invisible-mirror.net/archives/dialog/dialog-${DIALOG_VERSION}.tgz, \
 ../download/dialog-${DIALOG_VERSION}.tar.gz, \
 453095abaec288bfbc1ca9faced917e17742cff1ea45ec46210071ac153562f9)) #dialog
 
