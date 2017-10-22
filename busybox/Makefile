@@ -1,5 +1,5 @@
 include ../util.mk
-BUSYBOX_VERSION := 1.25.0
+BUSYBOX_VERSION := 1.27.2
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
@@ -14,12 +14,12 @@ all: busybox
 	chmod 755 busybox/_install/bin/udhcpc.script
 	tar -C busybox/_install -cf out.tar .
 
-busybox: ../download/busybox.tar.bz2
-	tar xf ../download/busybox.tar.bz2
+busybox: ../download/busybox-${BUSYBOX_VERSION}.tar.bz2
+	tar xf ../download/busybox-${BUSYBOX_VERSION}.tar.bz2
 	mv busybox-${BUSYBOX_VERSION} busybox
 	cp busybox.config busybox/.config
 
 $(eval $(call cache,\
 http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2, \
-../download/busybox.tar.bz2, \
-5a0fe06885ee1b805fb459ab6aaa023fe4f2eccee4fb8c0fd9a6c17c0daca2fc))
+../download/busybox-${BUSYBOX_VERSION}.tar.bz2, \
+9d4be516b61e6480f156b11eb42577a13529f75d3383850bb75c50c285de63df))
