@@ -168,7 +168,7 @@ box: output/pcd-${PCD_VERSION}.box
 
 output/pcd-${PCD_VERSION}.box: output/pcd-${PCD_VERSION}.iso
 	cd packer \
-	; ~/local/go/src/github.com/mitchellh/packer/bin/packer build \
+	; packer build \
 	${PACKERDEBUG} \
 	-var 'iso=${PWD}/output/pcd-${PCD_VERSION}.iso' \
 	-var 'version=${PCD_VERSION}' \
