@@ -1,5 +1,5 @@
 include ../util.mk
-DOCKER_VERSION := 17.10.0-ce
+DOCKER_VERSION := 18.01.0-ce
 
 all: ../download/docker-${DOCKER_VERSION}.tar.gz
 	tar xf ../download/docker-${DOCKER_VERSION}.tar.gz
@@ -10,4 +10,4 @@ all: ../download/docker-${DOCKER_VERSION}.tar.gz
 $(eval $(call cache,\
 https://download.docker.com/linux/static/edge/x86_64/docker-${DOCKER_VERSION}.tgz, \
 ../download/docker-${DOCKER_VERSION}.tar.gz, \
-db10b851c793845ec42d1af7be28c6cb2844d9345246607de990f429064a623e))
+c61ec5b86a721c65371a38e8fbf831e04b58c6e845289282dfa596790ccae8da))
