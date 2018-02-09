@@ -206,7 +206,7 @@ output/pcd-${PCD_VERSION}.img: output/pcd-${PCD_VERSION}.iso output/pcd-${PCD_VE
 	dd if=/dev/zero of=$@ bs=4M count=256 conv=sparse
 	python -m SimpleHTTPServer & \
 	spid=$$! \
-    && kvm -m 512 -nographic -cdrom output/pcd-${PCD_VERSION}.iso \
+    && kvm -m 1024 -nographic -cdrom output/pcd-${PCD_VERSION}.iso \
 		-kernel output/pcd-${PCD_VERSION}.vmlinuz \
 		-append 'console=ttyS0 url=http://10.0.2.2:8000/install.yaml' \
 	$@ \
