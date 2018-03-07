@@ -1,11 +1,11 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.14.14
+KERNEL_VERSION ?= 4.15.2
 LOCAL_VERSION ?= -${PCD_VERSION}
 ARCH ?= amd64
 
 PWD = $(shell pwd)
-JOBS = $(shell grep -c processor /proc/cpuinfo)
+JOBS ?= $(shell grep -c processor /proc/cpuinfo)
 export INSTALL_PATH = ${PWD}/out
 export INSTALL_MOD_PATH = ${PWD}/out
 export CONFIG_INITRAMFS_SOURCE = ${PWD}/../out
@@ -60,7 +60,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-8b96362eb55ae152555980e7193fe2585b487176fb936cc69b8947d7dd32044a)) #kernel
+eb6a0bc21a47c6f5c88b3de1d09f31c979a6e9b28837abe09826b6b59421039a)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
