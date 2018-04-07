@@ -97,7 +97,6 @@ tar: output/pcd-${PCD_VERSION}.iso
 
 .PHONY: clean
 clean:
-	-rm pcd-*.box
 	-rm output/pcd-*
 
 iso: output/pcd-${PCD_VERSION}.iso
