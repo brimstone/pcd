@@ -56,6 +56,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 	tar xf ../download/linux-${KERNEL_VERSION}.tar.xz
 	mv linux-$(subst .0,,${KERNEL_VERSION}) linux
 	cp ${ARCH}.config linux/.config
+	cd linux; [ ! -d ../patches/${ARCH} ] || for p in ../patches/${ARCH}/*.patch; do patch -p 1 < "$$p"; done
 
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \

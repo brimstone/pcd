@@ -189,6 +189,7 @@ debug: docker_image
 		-e KBUILD_BUILD_USER \
 		-e KBUILD_BUILD_HOST \
 		-e VERBOSE \
+		-e ARCH \
 		$(cachedir) \
 		pcd:${PCD_VERSION} \
 		/bin/bash -c 'make debug; /bin/bash'
