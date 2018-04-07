@@ -1,6 +1,6 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.15.2
+KERNEL_VERSION ?= 4.15.7
 LOCAL_VERSION ?= -${PCD_VERSION}
 ARCH ?= amd64
 
@@ -61,7 +61,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-eb6a0bc21a47c6f5c88b3de1d09f31c979a6e9b28837abe09826b6b59421039a)) #kernel
+cd44df4b23a3e0edc14be63df95d768b9600b31c35be05fb89f93226907fc8c6)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
