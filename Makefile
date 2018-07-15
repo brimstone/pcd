@@ -151,12 +151,14 @@ output/pcd-${PCD_VERSION}.iso: kernel.lz
 endif
 
 kvm: pcd.qcow2
-	kvm -m 1024 \
+	kvm -m 2048 \
 	${KVMSERIAL} \
 	${KVMSOURCE} \
 	-usb \
 	-device usb-ehci \
 	-device usb-kbd \
+	-netdev user,id=net,hostfwd=tcp::2375-:2375 \
+	-device e1000,netdev=net \
 	pcd.qcow2 || true
 
 pcd.qcow2:
