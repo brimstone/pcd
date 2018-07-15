@@ -61,7 +61,7 @@ popt: ../download/popt.tar.gz
 
 
 $(eval $(call cache, \
-http://rpm5.org/files/popt/popt-${POPT_VERSION}.tar.gz, \
+ftp://anduin.linuxfromscratch.org/BLFS/popt/popt-${POPT_VERSION}.tar.gz, \
 ../download/popt.tar.gz, \
 e728ed296fe9f069a0e005003c3d6b2dde3d9cad453422a10d6558616d304cc8))
 
