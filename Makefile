@@ -99,6 +99,12 @@ tar: output/pcd-${PCD_VERSION}.iso
 clean:
 	-rm output/pcd-*
 
+.PHONY: dist-clean
+dist-clean: clean
+ifneq ($(CACHE),)
+	-docker run $(cachedir) --rm -i busybox rm -rf /buildroot/download/\*
+endif
+
 iso: output/pcd-${PCD_VERSION}.iso
 
 ifneq (${DOCKER},)
