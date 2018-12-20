@@ -25,6 +25,7 @@ syslinux: ../download/syslinux.tar.xz libuuid
 	mv syslinux-${SYSLINUX_VERSION}${SYSLINUX_PATCH} syslinux
 	cd syslinux \
 	&& patch -p1 < ../CFLAGS.patch \
+	&& patch -p1 < ../major-minor.patch \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out"
 
