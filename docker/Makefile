@@ -5,6 +5,7 @@ all: ../download/docker-${DOCKER_VERSION}.tar.gz root/etc/ssl/certs/docker.hub.p
 	tar xf ../download/docker-${DOCKER_VERSION}.tar.gz
 	mkdir root/bin
 	mv docker/* root/bin
+	chown -R 0:0 root/bin
 	tar -cf out.tar -C root .
 
 root/etc/ssl/certs/docker.hub.pem:
