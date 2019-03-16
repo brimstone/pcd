@@ -88,6 +88,16 @@ out: components
 		tar -xf "$$tar" -C out >&2; \
 	done
 	@cat out/etc/ssl/certs/* > out/etc/ssl/certs/ca-certificates.crt
+	@mksquashfs out out.squash -comp zstd -Xcompression-level 22 >&2
+	@cd out; find . \
+		! -path ./bin/busybox \
+		-a ! -path ./init \
+		-a ! -path ./dev/console \
+		-a ! -path ./dev/null \
+		-delete || true
+	@mv out.squash out/squash
+	@find out ! -type d -ls >&2
+
 
 .PHONY: tar
 tar: output/pcd-${PCD_VERSION}.iso
@@ -125,7 +135,7 @@ docker: docker_image
 		-e CACHE \
 		-e ARCH \
 		$(cachedir) \
-		pcd:${PCD_VERSION} make tar | tar -xC output
+		pcd:${PCD_VERSION} make tar | tee /tmp/pcd.tar | tar -xC output
 	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
 
 shell: docker_image
@@ -157,7 +167,7 @@ output/pcd-${PCD_VERSION}.iso: kernel.lz
 endif
 
 kvm: pcd.qcow2
-	kvm -m 2048 \
+	kvm -m 256 \
 	${KVMSERIAL} \
 	${KVMSOURCE} \
 	-usb \
@@ -203,7 +213,7 @@ debug: docker_image
 		/bin/bash -c 'make debug; /bin/bash'
 else
 debug:
-	# uncommenit these to debug components
+	# uncomment these to debug components
 	#make kernel libc
 	#make -C iptables
 endif

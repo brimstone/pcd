@@ -1,4 +1,0 @@
-#!/bin/sh
-
-mkdir -p /var/log
-exec /sbin/syslogd -n -s 102400 -b 10

@@ -1,7 +1,0 @@
-#!/bin/sh
-exec 0</dev/ttyS0
-exec 1>/dev/ttyS0
-exec 2>/dev/ttyS0
-
-cd /
-/bin/login -f root

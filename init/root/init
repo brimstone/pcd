@@ -1,19 +1,47 @@
-#!/bin/sh
+#!/bin/busybox sh
 # devtmpfs does not get automounted for initramfs
 
 export PATH=/sbin:/bin
+if [ -f /squash ]; then
+	/bin/busybox mkdir /sbin
+	/bin/busybox --install -s
+	mount -t devtmpfs devtmpfs /dev
+	exec 0</dev/console
+	exec 1>/dev/console
+	exec 2>/dev/console
+
+	mkdir /sys
+	mount -t sysfs sysfs /sys
+	mkdir /proc
+	mount -t proc proc /proc
+
+	# optimum size is 2x ram: https://www.kernel.org/doc/Documentation/blockdev/zram.txt
+	memtotal="$(awk '$1 == "MemTotal:" {print $2 * 1024 * 2}' /proc/meminfo)"
+	echo $memtotal > /sys/block/zram0/disksize
+
+	mkdir /lower
+	mount squash /lower -t squashfs -o loop
+	mkdir /overlay
+
+	/lower/sbin/mkfs.ext4 /dev/zram0
+	mount /dev/zram0 /overlay -o discard,noatime
+
+	mkdir /overlay/work
+	mkdir /overlay/upper
+	mkdir /root
+	mount none /root -t overlay -o lowerdir=/lower,upperdir=/overlay/upper,workdir=/overlay/work
+
+	mkdir /root/overlay
+	mount -o bind /overlay /root/overlay
+
+	exec switch_root /root /init
+fi
+
 mount -t devtmpfs devtmpfs /dev
-exec 0</dev/console
-exec 1>/dev/console
-exec 2>/dev/console
-
-mkdir /proc
-mount -t proc proc /proc
-
 mkdir /sys
 mount -t sysfs sysfs /sys
-
-mount -o remount,rw /
+mkdir /proc
+mount -t proc proc /proc
 
 mkdir -p /dev/pts
 mount -t devpts devpts /dev/pts
@@ -29,7 +57,6 @@ find /sys -name modalias -exec cat \{\} \; \
 
 # make and mount /data
 [ -d /data ] || mkdir /data
-# TODO make this better
 if mount LABEL=DATA /data; then
 	device=$(mount | awk '/\/data/ {print $1}')
 	umount /data
@@ -39,8 +66,11 @@ if mount LABEL=DATA /data; then
 	sgdisk -N "${partnum}" -c "${partnum}":"Linux Data" -t "${partnum}":8e00 "${drive}"
 	e2fsck -f "${device}"
 	resize2fs "${device}"
+	mount LABEL=DATA /data
+else
+	mkdir /overlay/data
+	mount -o bind /overlay/data /data
 fi
-mount LABEL=DATA /data || true
 
 [ -d /boot ] || mkdir /boot
 
