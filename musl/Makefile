@@ -1,5 +1,5 @@
 include ../util.mk
-MUSL_VERSION := 1.1.17
+MUSL_VERSION := 1.1.21
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
@@ -15,4 +15,4 @@ all: ../download/musl-${MUSL_VERSION}.tar.gz
 $(eval $(call cache,\
 http://www.musl-libc.org/releases/musl-${MUSL_VERSION}.tar.gz, \
 ../download/musl-${MUSL_VERSION}.tar.gz, \
-c8aa51c747a600704bed169340bf3e03742ceee027ea0051dd4b6cc3c5f51464))
+c742b66f6f49c9e5f52f64d8b79fecb5a0f6e0203fca176c70ca20f6be285f44))
