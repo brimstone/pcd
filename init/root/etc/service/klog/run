@@ -1,0 +1,8 @@
+#!/bin/sh
+
+sv status /service/syslog | grep -q '^run' || exit
+
+# turn down logging to the screen now that it's captured to syslog
+echo 1 > /proc/sys/kernel/printk
+
+exec klogd -n
