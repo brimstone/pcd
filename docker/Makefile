@@ -1,5 +1,5 @@
 include ../util.mk
-DOCKER_VERSION := 18.09.0
+DOCKER_VERSION := 18.09.3
 
 all: ../download/docker-${DOCKER_VERSION}.tar.gz root/etc/ssl/certs/docker.hub.pem root/etc/ssl/certs/docker.registry.pem
 	tar xf ../download/docker-${DOCKER_VERSION}.tar.gz
@@ -23,4 +23,4 @@ root/etc/ssl/certs/docker.registry.pem:
 $(eval $(call cache,\
 https://download.docker.com/linux/static/edge/x86_64/docker-${DOCKER_VERSION}.tgz, \
 ../download/docker-${DOCKER_VERSION}.tar.gz, \
-08795696e852328d66753963249f4396af2295a7fe2847b839f7102e25e47cb9)) #docker
+8b886106cfc362f1043debfe178c35b6f73ec42380b034a3919a235fe331e053)) #docker
