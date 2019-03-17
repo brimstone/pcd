@@ -1,6 +1,6 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 4.19.10
+KERNEL_VERSION ?= 5.0.2
 LOCAL_VERSION ?= -${PCD_VERSION}
 ARCH ?= amd64
 
@@ -54,14 +54,14 @@ linux/linux: linux
 
 linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 	tar xf ../download/linux-${KERNEL_VERSION}.tar.xz
-	mv linux-$(subst .0,,${KERNEL_VERSION}) linux
+	mv linux-${KERNEL_VERSION} linux
 	cp ${ARCH}.config linux/.config
 	cd linux; [ ! -d ../patches/${ARCH} ] || for p in ../patches/${ARCH}/*.patch; do patch -p 1 < "$$p"; done
 
 $(eval $(call cache,\
-https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$(subst .0,,${KERNEL_VERSION}).tar.xz, \
+https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KERNEL_VERSION}.tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-afe968ceeca93eac2173f9f95d90b2eeb489bafdd2083478ac0b7d0704b33e94)) #kernel
+43bfea3a6b24b4e5f63190409a199bee8cb93dbea01c52ad7f017078ebdf7c9b)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
