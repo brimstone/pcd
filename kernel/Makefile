@@ -1,6 +1,7 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 5.0.2
+KERNEL_VERSION ?= 5.2
+FULL_VERSION ?= 5.2.0
 LOCAL_VERSION ?= -${PCD_VERSION}
 ARCH ?= amd64
 
@@ -32,7 +33,7 @@ ${INSTALL_PATH}: linux/linux
 			xt_conntrack \
 			binfmt_misc; do \
 			if [ -z "$$(grep "/$$f.ko" out/lib/modules/${KERNEL_VERSION}${LOCAL_VERSION}/modules.*)" ] \
-			&& [ -z "$$(grep "$(echo "/$$f.ko" | tr '-_' '_-')" out/lib/modules/${KERNEL_VERSION}${LOCAL_VERSION}/modules.*)" ] \
+			&& [ -z "$$(grep "$(echo "/$$f.ko" | tr '-_' '_-')" out/lib/modules/${FULL_VERSION}${LOCAL_VERSION}/modules.*)" ] \
 				; then \
 				modules="$$modules $$f"; \
 		fi; \
@@ -41,7 +42,7 @@ ${INSTALL_PATH}: linux/linux
 		echo "Can't find:$$modules"; \
 		exit 1; \
 	fi
-	depmod -b ${INSTALL_PATH} ${KERNEL_VERSION}${LOCAL_VERSION}
+	depmod -b ${INSTALL_PATH} ${FULL_VERSION}${LOCAL_VERSION}
 	cp linux/System.map ${INSTALL_PATH}
 	tar -C ${INSTALL_PATH} -cf out.tar lib System.map
 	mv ${INSTALL_PATH}/vmlinuz* kernel.gz
@@ -61,7 +62,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KERNEL_VERSION}.tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-43bfea3a6b24b4e5f63190409a199bee8cb93dbea01c52ad7f017078ebdf7c9b)) #kernel
+54ad66f672e1a831b574f5e704e8a05f1e6180a8245d4bdd811208a6cb0ac1e7)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
