@@ -153,9 +153,8 @@ output/pcd-${PCD_VERSION}.iso: kernel.lz
 	@cp installer iso >&2
 	@cd iso; sha256sum primary  installer >sha256sum
 	@if [ -e signingkey.priv ]; then \
-		gpg --import signingkey.priv >&2 \
-		&& cd iso \
-		&& gpg --sign sha256sum >&2\
+		cd iso \
+		&& notminisign sign -i sha256sum -s ../signingkey.priv -o sha256sum.sig >&2 \
 		; fi
 	@echo "default pcd" > iso/isolinux.cfg
 	@echo "label pcd" >> iso/isolinux.cfg

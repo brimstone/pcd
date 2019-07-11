@@ -25,7 +25,7 @@ fi
 
 cd /mnt
 
-if [ -z "${NO_VERIFY:-}" ] && ! gpg --verify sha256sum.gpg; then
+if [ -z "${NO_VERIFY:-}" ] && ! notminisign verify -i sha256sum -p /etc/signingkey.pub -s sha256sum.sig; then
 	echo "Verification check failed" >&2
 	cd /
 	umount /mnt
