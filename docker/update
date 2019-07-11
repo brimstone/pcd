@@ -1,0 +1,7 @@
+#!/bin/bash
+ver="$(curl https://download.docker.com/linux/static/edge/x86_64/ -s |grep docker- | tail -n 1 | sed 's/<[^>]*>//g;s/docker-//g;s/.tgz.*//g')"
+sha256sum="$(curl -L "https://download.docker.com/linux/static/edge/x86_64/docker-$ver.tgz" |sha256sum)"
+sha256sum="${sha256sum%% *}"
+echo Docker Version: $ver
+sed -i "/DOCKER_VERSION/s/= .*/= $ver/" Makefile
+sed -i "/#docker/s/^[a-z0-9]*/$sha256sum/" Makefile
