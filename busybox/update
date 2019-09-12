@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+
+link="$( (curl -s https://busybox.net || true )| grep downloads/busybox -m 1)"
+link="${link#*\"}"
+link="${link%\"*}"
+
+version="${link#*-}"
+version="${version%.tar.bz2}"
+echo "Busybox version: $version"
+
+sha256sum="$(curl "$link" | sha256sum)"
+sha256sum="${sha256sum%% *}"
+
+sed -i "s/BUSYBOX_VERSION := .*$/BUSYBOX_VERSION := $version/" Makefile
+sed -i "/#busybox/s/^[a-z0-9]*/$sha256sum/" Makefile
