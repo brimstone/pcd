@@ -1,7 +1,7 @@
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 
-KERNEL_VERSION ?= 5.2.10
-FULL_VERSION ?= 5.2.10
+KERNEL_VERSION ?= 5.2.14
+FULL_VERSION ?= 5.2.14
 LOCAL_VERSION ?= -${PCD_VERSION}
 ARCH ?= amd64
 
@@ -16,6 +16,11 @@ include ../util.mk
 ifeq (${ARCH},um)
 ${INSTALL_PATH}: linux/linux
 	cp linux/linux kernel.gz
+	mkdir linux/arch/um/include/uapi
+	mv linux/arch/um/include/asm linux/arch/um/include/uapi
+	cd linux \
+	&& make headers_install \
+		INSTALL_HDR_PATH=${PWD}/out
 else
 ${INSTALL_PATH}: linux/linux
 	mkdir -p ${INSTALL_PATH}
@@ -62,7 +67,7 @@ linux: ../download/linux-${KERNEL_VERSION}.tar.xz
 $(eval $(call cache,\
 https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${KERNEL_VERSION}.tar.xz, \
 ../download/linux-${KERNEL_VERSION}.tar.xz, \
-6096c4387c2a296de9136080942d11ae3f1bd28129b6952f7133c570e43bfc49)) #kernel
+c64d36477fee6a864a734ec417407768e60040a13f144c33208fa9622fd0ce8c)) #kernel
 
 clean:
 	-rm linux-${KERNEL_VERSION}.tar.xz
