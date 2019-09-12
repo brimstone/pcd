@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 kernel="$(curl -s https://www.kernel.org/ | grep -oE 'http[^ ]*tar.xz' | uniq -d | sed 's/^.*linux-//;s/.tar.xz//')"
 
