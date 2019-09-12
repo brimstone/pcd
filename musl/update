@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+trap 'echo ret: $?' EXIT
+version="$( (curl -s https://www.musl-libc.org/download.html || true )| grep Mainline -m 1)"
+version="${version##* }"
+version="${version%<*}"
+
+echo "Musl version: $version"
+
+sha256sum="$(curl "http://www.musl-libc.org/releases/musl-$version.tar.gz" | sha256sum)"
+sha256sum="${sha256sum%% *}"
+
+sed -i "s/MUSL_VERSION := .*$/MUSL_VERSION := $version/" Makefile
+sed -i "/#musl/s/^[a-z0-9]*/$sha256sum/" Makefile
