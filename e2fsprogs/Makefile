@@ -9,7 +9,7 @@ export CFLAGS
 LDFLAGS = -static
 export LDFLAGS
 
-E2FSPROGS_VERSION = 1.43.1
+E2FSPROGS_VERSION = 1.45.3
 
 all: mkfs.ext4
 	mkdir -p ${PWD}/root/sbin
@@ -19,11 +19,12 @@ all: mkfs.ext4
 	strip ${PWD}/root/sbin/*
 	tar cf ${PWD}/out.tar -C ${PWD}/root .
 
-mkfs.ext4: ../download/e2fsprogs.tar.gz
-	tar xf ../download/e2fsprogs.tar.gz
+mkfs.ext4: ../download/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz
+	tar xf ../download/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz
 	mv e2fsprogs-${E2FSPROGS_VERSION} e2fsprogs
 	cd e2fsprogs \
 	&& ./configure --prefix=/ \
+	&& rm -rf scrub \
 	&& make -j${JOBS} install DESTDIR=${PWD}/out \
 	&& cd e2fsck \
 	&& make e2fsck.static \
@@ -31,8 +32,8 @@ mkfs.ext4: ../download/e2fsprogs.tar.gz
 
 $(eval $(call cache,\
 https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz/download, \
-../download/e2fsprogs.tar.gz, \
-83dba1d96dfdba06f1ca0da6a77d539c22391b99fbd9bd733699689ca25dbebc))
+../download/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz, \
+3a5556e0cb746c214e4c581951a3c21ba5c145eb53008277f88f1f98ae75983d)) #e2fsprogs
 
 clean:
 	-rm -rf e2fsprogs*

@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+
+version="$( (curl https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs/ -s || true ) | grep tar.gz -m 1 | sed 's/.tar.gz.*$//;s/^.*-//')"
+echo "e2fsprogs version: $version"
+
+link="https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${version}.tar.gz/download"
+
+sha256sum="$(curl -L "$link" | sha256sum)"
+sha256sum="${sha256sum%% *}"
+
+sed -i "s/E2FSPROGS_VERSION := .*$/E2FSPROGS_VERSION := $version/" Makefile
+sed -i "/#e2fsprogs/s/^[a-z0-9]*/$sha256sum/" Makefile
+
