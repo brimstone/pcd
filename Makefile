@@ -29,11 +29,6 @@ ifdef DEBUG
 	PACKERDEBUG=-var 'boot_debug=docker exec -it ssh /bin/sh<enter><wait10><wait10><wait10><wait10>touch /tmp/ssh.log; tail -f /tmp/ssh.log&'
 endif
 
-.DEFAULT_GOAL := all
-
-.PHONY: all
-all: box gce
-
 KVMSERIAL=-nographic
 ifdef GUI
 	KVMSERIAL=-serial stdio
@@ -44,6 +39,106 @@ ifdef KERNEL
 	KVMSOURCE=-kernel output/pcd-${PCD_VERSION}.vmlinuz -append "console=ttyS0 initcall_debug url=http://10.0.2.2:8000/config.yaml"
 endif
 
+.DEFAULT_GOAL := help
+.PHONY: help
+help:
+	@awk 'BEGIN { \
+		FS = ":.*##"; \
+		printf "\nUsage:\n  make \033[36m<target>\033[0m\n"\
+	} \
+	/^[a-zA-Z_-]+:.*?##/ { \
+		printf "  \033[36m%-17s\033[0m %s\n", $$1, $$2 \
+	} \
+	/^##@/ { \
+		printf "\n\033[1m%s\033[0m\n", substr($$0, 5) \
+	} ' $(MAKEFILE_LIST)
+
+##@ Build targets
+
+.PHONY: all
+all: box gce ## Produce the iso, raw kernel file, vagrant box, and GCE disk image
+
+iso: output/pcd-${PCD_VERSION}.iso ## Produce an iso
+
+ifneq (${DOCKER},)
+output/pcd-${PCD_VERSION}.iso:
+	$(MAKE) docker
+
+.PHONY: docker_image docker
+docker_image:
+	@${DOCKER} build -t pcd:${PCD_VERSION} . ${LOG}
+
+docker: docker_image
+	@echo "Building with docker"
+	@${DOCKER} run --rm -i \
+		-e PCD_VERSION \
+		-e KBUILD_BUILD_USER \
+		-e KBUILD_BUILD_HOST \
+		-e VERBOSE \
+		-e CACHE \
+		-e ARCH \
+		$(cachedir) \
+		pcd:${PCD_VERSION} make tar | tee /tmp/pcd.tar | tar -xC output
+	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
+
+shell: docker_image
+	${DOCKER} run --rm -it \
+		-e PCD_VERSION \
+		$(cachedir) \
+		pcd:${PCD_VERSION}
+else
+output/pcd-${PCD_VERSION}.iso: kernel.lz
+	@rm -rf iso >&2
+	@mkdir iso >&2
+	@cp syslinux/syslinux/bios/core/isolinux.bin iso/ >&2
+	@cp syslinux/syslinux/bios/com32/elflink/ldlinux/ldlinux.c32 iso/ >&2
+	@cp kernel.lz iso/primary >&2
+	@cp installer iso >&2
+	@cd iso; sha256sum primary  installer >sha256sum
+	@if [ -e signingkey.priv ]; then \
+		cd iso \
+		&& notminisign sign -i sha256sum -s ../signingkey.priv -o sha256sum.sig >&2 \
+		; fi
+	@echo "default pcd" > iso/isolinux.cfg
+	@echo "label pcd" >> iso/isolinux.cfg
+	@echo "      kernel primary" >> iso/isolinux.cfg
+	@mkdir output
+	@genisoimage -o output/pcd-${PCD_VERSION}.iso \
+		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
+		-J -V pcd iso/ >&2
+endif
+
+.PHONY: box
+box: output/pcd-${PCD_VERSION}.box ## Produce a vagrant box
+
+output/pcd-${PCD_VERSION}.box: output/pcd-${PCD_VERSION}.iso
+	cd packer \
+	; packer build \
+	${PACKERDEBUG} \
+	-var 'iso=${PWD}/output/pcd-${PCD_VERSION}.iso' \
+	-var 'version=${PCD_VERSION}' \
+	packer.json
+
+.PHONY: img
+img: output/pcd-${PCD_VERSION}.img ## Produce a raw disk image
+output/pcd-${PCD_VERSION}.img: output/pcd-${PCD_VERSION}.iso output/pcd-${PCD_VERSION}.vmlinuz
+	dd if=/dev/zero of=$@ bs=4M count=256 conv=sparse
+	python -m SimpleHTTPServer & \
+	spid=$$! \
+    && kvm -m 1024 -nographic -cdrom output/pcd-${PCD_VERSION}.iso \
+		-kernel output/pcd-${PCD_VERSION}.vmlinuz \
+		-append 'console=ttyS0 url=http://10.0.2.2:8000/install.yaml' \
+	$@ \
+	&& kill $$spid
+
+.PHONY: gce
+gce: output/pcd-${PCD_VERSION}.gce.tar.gz ## Produce the GCE image
+output/pcd-${PCD_VERSION}.gce.tar.gz: output/pcd-${PCD_VERSION}.img
+	cp $< output/disk.raw
+	tar -Sczvf $@ -C output disk.raw
+	rm output/disk.raw
+
+##@ Helper targets
 .PHONY: kernel
 kernel:
 	@echo "$$(date) Building kernel" >&2
@@ -106,7 +201,7 @@ tar: output/pcd-${PCD_VERSION}.iso
 	@echo "Export complete" >&2
 
 .PHONY: clean
-clean:
+clean: ## Clean output directory
 	-rm output/pcd-*
 
 .PHONY: dist-clean
@@ -115,58 +210,9 @@ ifneq ($(CACHE),)
 	-docker run $(cachedir) --rm -i busybox rm -rf /buildroot/download/\*
 endif
 
-iso: output/pcd-${PCD_VERSION}.iso
 
-ifneq (${DOCKER},)
-output/pcd-${PCD_VERSION}.iso:
-	$(MAKE) docker
-
-.PHONY: docker_image docker
-docker_image:
-	@${DOCKER} build -t pcd:${PCD_VERSION} . ${LOG}
-
-docker: docker_image
-	@echo "Building with docker"
-	@${DOCKER} run --rm -i \
-		-e PCD_VERSION \
-		-e KBUILD_BUILD_USER \
-		-e KBUILD_BUILD_HOST \
-		-e VERBOSE \
-		-e CACHE \
-		-e ARCH \
-		$(cachedir) \
-		pcd:${PCD_VERSION} make tar | tee /tmp/pcd.tar | tar -xC output
-	@iso-read -i output/pcd-${PCD_VERSION}.iso -e primary -o output/pcd-${PCD_VERSION}.vmlinuz
-
-shell: docker_image
-	${DOCKER} run --rm -it \
-		-e PCD_VERSION \
-		$(cachedir) \
-		pcd:${PCD_VERSION}
-else
-output/pcd-${PCD_VERSION}.iso: kernel.lz
-	@rm -rf iso >&2
-	@mkdir iso >&2
-	@cp syslinux/syslinux/bios/core/isolinux.bin iso/ >&2
-	@cp syslinux/syslinux/bios/com32/elflink/ldlinux/ldlinux.c32 iso/ >&2
-	@cp kernel.lz iso/primary >&2
-	@cp installer iso >&2
-	@cd iso; sha256sum primary  installer >sha256sum
-	@if [ -e signingkey.priv ]; then \
-		cd iso \
-		&& notminisign sign -i sha256sum -s ../signingkey.priv -o sha256sum.sig >&2 \
-		; fi
-	@echo "default pcd" > iso/isolinux.cfg
-	@echo "label pcd" >> iso/isolinux.cfg
-	@echo "      kernel primary" >> iso/isolinux.cfg
-	@mkdir output
-	@genisoimage -o output/pcd-${PCD_VERSION}.iso \
-		-b isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table \
-		-J -V pcd iso/ >&2
-endif
-
-kvm: pcd.qcow2
-	kvm -m 256 \
+kvm: pcd.qcow2 ## Start a debug session in a kvm environment
+	kvm -m 1024 \
 	${KVMSERIAL} \
 	${KVMSOURCE} \
 	-usb \
@@ -178,17 +224,6 @@ kvm: pcd.qcow2
 
 pcd.qcow2:
 	qemu-img create -f qcow2 pcd.qcow2 20G
-
-.PHONY: box
-box: output/pcd-${PCD_VERSION}.box
-
-output/pcd-${PCD_VERSION}.box: output/pcd-${PCD_VERSION}.iso
-	cd packer \
-	; packer build \
-	${PACKERDEBUG} \
-	-var 'iso=${PWD}/output/pcd-${PCD_VERSION}.iso' \
-	-var 'version=${PCD_VERSION}' \
-	packer.json
 
 reload-box:
 	-vagrant box remove -f pcd
@@ -211,27 +246,12 @@ debug: docker_image
 		pcd:${PCD_VERSION} \
 		/bin/bash -c 'make debug; /bin/bash'
 else
-debug:
+debug: ## Start a debug session in the build environment
 	# uncomment these to debug components
-	#make kernel libc
-	#make -C iptables
+	make kernel libc
+	make -C e2fsprogs
 endif
 
-.PHONY: img
-img: output/pcd-${PCD_VERSION}.img
-output/pcd-${PCD_VERSION}.img: output/pcd-${PCD_VERSION}.iso output/pcd-${PCD_VERSION}.vmlinuz
-	dd if=/dev/zero of=$@ bs=4M count=256 conv=sparse
-	python -m SimpleHTTPServer & \
-	spid=$$! \
-    && kvm -m 1024 -nographic -cdrom output/pcd-${PCD_VERSION}.iso \
-		-kernel output/pcd-${PCD_VERSION}.vmlinuz \
-		-append 'console=ttyS0 url=http://10.0.2.2:8000/install.yaml' \
-	$@ \
-	&& kill $$spid
-
-.PHONY: tar
-gce: output/pcd-${PCD_VERSION}.gce.tar.gz
-output/pcd-${PCD_VERSION}.gce.tar.gz: output/pcd-${PCD_VERSION}.img
-	cp $< output/disk.raw
-	tar -Sczvf $@ -C output disk.raw
-	rm output/disk.raw
+.PHONY: versions
+versions: ## Show versions of components used
+	@grep -E '^[A-Z]*_VERSION :' */Makefile -h | sort | uniq | sed 's/_VERSION//;s/ :=/:/;s/[A-Z]/\L&/g'
