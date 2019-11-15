@@ -9,6 +9,6 @@ link="https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${version}.tar.
 sha256sum="$(curl -sL "$link" | sha256sum)"
 sha256sum="${sha256sum%% *}"
 
-sed -i "s/E2FSPROGS_VERSION := .*$/E2FSPROGS_VERSION := $version/" Makefile
+sed -i "s/E2FSPROGS_VERSION = .*$/E2FSPROGS_VERSION = $version/" Makefile
 sed -i "/#e2fsprogs/s/^[a-z0-9]*/$sha256sum/" Makefile
 
