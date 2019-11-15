@@ -9,7 +9,7 @@ version="${link#*-}"
 version="${version%.tar.bz2}"
 echo "Busybox version: $version"
 
-sha256sum="$(curl "$link" | sha256sum)"
+sha256sum="$(curl -s "$link" | sha256sum)"
 sha256sum="${sha256sum%% *}"
 
 sed -i "s/BUSYBOX_VERSION := .*$/BUSYBOX_VERSION := $version/" Makefile

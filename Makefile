@@ -1,3 +1,4 @@
+SHELL = /bin/bash
 PWD = $(shell pwd)
 PCD_VERSION ?= $(shell git describe --tags --always --dirty)
 export PCD_VERSION
@@ -255,3 +256,7 @@ endif
 .PHONY: versions
 versions: ## Show versions of components used
 	@grep -E '^[A-Z]*_VERSION :' */Makefile -h | sort | uniq | sed 's/_VERSION//;s/ :=/:/;s/[A-Z]/\L&/g'
+
+.PHONY: update
+update:
+	@for f in */update; do pushd $$(dirname "$$f") >/dev/null; ./update; popd >/dev/null; done

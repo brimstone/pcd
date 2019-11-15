@@ -5,7 +5,7 @@ kernel="$(curl -s https://www.kernel.org/ | grep -oE 'http[^ ]*tar.xz' | uniq -d
 
 echo "Kernel version: $kernel"
 
-sha256sum="$(curl "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${kernel}.tar.xz" |sha256sum)"
+sha256sum="$(curl -s "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${kernel}.tar.xz" |sha256sum)"
 sha256sum="${sha256sum%% *}"
 sed -i "s/KERNEL_VERSION ?= .*$/KERNEL_VERSION ?= $kernel/" Makefile
 sed -i "/#kernel/s/^[a-z0-9]*/$sha256sum/" Makefile
