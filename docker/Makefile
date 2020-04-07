@@ -13,19 +13,25 @@ root/etc/ssl/certs/k8s.gcr.io.pem:
 	mkdir -p root/etc/ssl/certs/
 	openssl s_client -connect k8s.gcr.io:443 -showcerts \
 		2>&1 </dev/null \
-	| awk '/BEGIN/,/END/' > $@
+	| tac \
+	| awk '/END/ {f=1} f==1 {print} NR>1 && /BEGIN/ {exit}' \
+	| tac > $@
 
 root/etc/ssl/certs/docker.hub.pem:
 	mkdir -p root/etc/ssl/certs/
 	openssl s_client -connect production.cloudflare.docker.com:443 -showcerts \
 		2>&1 </dev/null \
-	| awk '/BEGIN/,/END/' > root/etc/ssl/certs/docker.hub.pem
+	| tac \
+	| awk '/END/ {f=1} f==1 {print} NR>1 && /BEGIN/ {exit}' \
+	| tac > $@
 
 root/etc/ssl/certs/docker.registry.pem:
 	mkdir -p root/etc/ssl/certs/
 	openssl s_client -connect registry-1.docker.io:443 -showcerts \
 		2>&1 </dev/null \
-	| awk '/BEGIN/,/END/' > root/etc/ssl/certs/docker.registry.pem
+	| tac \
+	| awk '/END/ {f=1} f==1 {print} NR>1 && /BEGIN/ {exit}' \
+	| tac > $@
 
 $(eval $(call cache,\
 https://download.docker.com/linux/static/edge/x86_64/docker-${DOCKER_VERSION}.tgz, \
