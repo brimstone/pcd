@@ -9,7 +9,7 @@ export CFLAGS
 LDFLAGS = -static
 export LDFLAGS
 
-E2FSPROGS_VERSION = 1.45.4
+E2FSPROGS_VERSION = 1.45.5
 
 all: mkfs.ext4
 	mkdir -p ${PWD}/root/sbin
@@ -33,7 +33,7 @@ mkfs.ext4: ../download/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz
 $(eval $(call cache,\
 https://sourceforge.net/projects/e2fsprogs/files/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz/download, \
 ../download/e2fsprogs-${E2FSPROGS_VERSION}.tar.gz, \
-e69c69839cf80cb55afa18b9a99ed8f2e559db0313e3d15ac5497ed7e1a34c4b)) #e2fsprogs
+91e72a2f6fee21b89624d8ece5a4b3751a17b28775d32cd048921050b4760ed9)) #e2fsprogs
 
 clean:
 	-rm -rf e2fsprogs*
