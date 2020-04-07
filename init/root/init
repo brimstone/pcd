@@ -57,6 +57,7 @@ find /sys -name modalias -exec cat \{\} \; \
 
 # make and mount /data
 [ -d /data ] || mkdir /data
+sleep 1
 if mount LABEL=DATA /data; then
 	device=$(mount | awk '/\/data/ {print $1}')
 	umount /data
