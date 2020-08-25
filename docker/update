@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ueo pipefail
 
-ver="$(curl https://download.docker.com/linux/static/edge/x86_64/ -s |grep -E 'docker-[0-9]' | tail -n 1 | sed 's/<[^>]*>//g;s/docker-//g;s/.tgz.*//g')"
+ver="${VERSION:-$(curl https://download.docker.com/linux/static/edge/x86_64/ -s |grep -E 'docker-[0-9]' | tail -n 1 | sed 's/<[^>]*>//g;s/docker-//g;s/.tgz.*//g')}"
 sha256sum="$(curl -sL "https://download.docker.com/linux/static/edge/x86_64/docker-$ver.tgz" |sha256sum)"
 sha256sum="${sha256sum%% *}"
 echo "Docker version: $ver"
