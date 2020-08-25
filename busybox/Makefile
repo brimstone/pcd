@@ -1,5 +1,5 @@
 include ../util.mk
-BUSYBOX_VERSION := 1.31.1
+BUSYBOX_VERSION := 1.32.0
 
 PWD = $(shell pwd)
 JOBS = $(shell grep -c processor /proc/cpuinfo)
@@ -22,4 +22,4 @@ busybox: ../download/busybox-${BUSYBOX_VERSION}.tar.bz2
 $(eval $(call cache,\
 http://busybox.net/downloads/busybox-${BUSYBOX_VERSION}.tar.bz2, \
 ../download/busybox-${BUSYBOX_VERSION}.tar.bz2, \
-d0f940a72f648943c1f2211e0e3117387c31d765137d92bd8284a3fb9752a998)) #busybox
+c35d87f1d04b2b153d33c275c2632e40d388a88f19a9e71727e0bbbff51fe689)) #busybox
