@@ -26,6 +26,7 @@ syslinux: ../download/syslinux.tar.xz libuuid
 	cd syslinux \
 	&& patch -p1 < ../CFLAGS.patch \
 	&& patch -p1 < ../major-minor.patch \
+	&& patch -p1 < ../0019-gcc-10-compatibility.patch \
 	&& make -j${JOBS} \
 		DESTDIR="${PWD}/out"
 
